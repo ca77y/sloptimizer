@@ -28,7 +28,7 @@ claude plugin install more-slop@sloptimizer
 npx skills add ca77y/sloptimizer
 
 # One plugin only: point at its folder
-npx skills add https://github.com/ca77y/sloptimizer/tree/main/plugins/more-slop
+npx skills add https://github.com/ca77y/sloptimizer/tree/master/plugins/more-slop
 
 # One skill only
 npx skills add ca77y/sloptimizer --skill hello-slop
