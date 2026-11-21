@@ -32,7 +32,7 @@ Read before acting:
 - **Git, branches, commits, PRs, review** — `docs/GIT.md`.
 - **Stories and Linear** — `docs/BOARD.md`.
 - **Checking and validating a change** — `TESTING.md`.
-- **How the repo is built** — `docs/ARCHITECTURE.md` and `docs/design/`.
+- **How the repo is built** — `docs/ARCHITECTURE.md` and `docs/DESIGN.md`.
 
 ## Library
 
