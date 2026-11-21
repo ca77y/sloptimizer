@@ -5,13 +5,13 @@ description: Answers a question from new primary sources and adds the answer to 
 
 # Research
 
-The library holds evidence and synthesis; it never decides the product. Your output is wiki pages that answer the question, backed by one raw note per source, delivered as a PR. Read `library/_meta/librarian.md` (the library's conventions), `docs/BOARD.md` (the board) and `docs/GIT.md` (branches, commits, PRs) first; each one that exists wins over the defaults here. Without a library, report that and suggest the `bootstrap` skill.
+The library holds evidence and synthesis; it never decides the product. Your output is wiki pages that answer the question, backed by one raw note per source, delivered as a PR. Read `library/_meta/librarian.md` (the library's conventions), `docs/BOARD.md` (the board) and `docs/GIT.md` (work isolation, branches, commits, PRs) first; each one that exists wins over the defaults here. Without a library, report that and suggest the `bootstrap` skill.
 
 ## Start
 
 Read the card with its comments, or take the question from the request. Start the card on the board as `docs/BOARD.md` says.
 
-Work in a worktree of your own, so other runs can go on in parallel. Create it with its branch from the latest default branch, named and placed as `docs/GIT.md` says; without one, name the branch `<card id>-<slug>` (or a slug of the request) and put the worktree at `.worktrees/<branch>` in the root checkout. Prepare it as `docs/GIT.md` says, and do everything from here on inside it: every command, every file, every subagent brief, which names the worktree as the project root.
+Isolate your work as `docs/GIT.md` says, so other runs can go on in parallel: it sets the branch, where the work happens, and how that place is prepared. With no `docs/GIT.md`, work in a worktree of your own at `.worktrees/<branch>` in the root checkout, on a branch `<card id>-<slug>` (or a slug of the request) from the latest default branch. Do everything from here on inside that workspace: every command, every file, every subagent brief, which names it as the project root.
 
 ## Plan
 
@@ -19,15 +19,15 @@ Have the `librarian` agent report what the library already holds on the question
 
 ## Gather
 
-Dispatch the `library-scout` agent, one per sub-question, in parallel, each briefed with its sub-question and the worktree. Each saves raw notes and reports what it couldn't find.
+Dispatch the `scout` agent, one per sub-question, in parallel, each briefed with its sub-question and the workspace. Each saves raw notes and reports what it couldn't find.
 
 ## Write
 
-Brief the `library-scribe` agent with the question, the raw notes the scouts saved plus any the librarian cited, and the pages to write or extend. It writes the wiki pages that answer the question and updates the index and taxonomy.
+Brief the `scribe` agent with the question, the raw notes the scouts saved plus any the librarian cited, and the pages to write or extend. It writes the wiki pages that answer the question and updates the index and taxonomy.
 
 ## Check
 
-Have the pages reviewed as `TESTING.md` says. By default, have a `library-clerk` check the changed pages and raw notes against their citations and the conventions. Send its blocking findings back to the scribe to fix. One round; what's still open goes under **Not done**.
+Have the pages reviewed as `TESTING.md` says. By default, have a `clerk` check the changed pages and raw notes against their citations and the conventions. Send its blocking findings back to the scribe to fix. One round; what's still open goes under **Not done**.
 
 With no subagents available, do each job yourself, in this order, by the library conventions.
 

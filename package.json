@@ -1,0 +1,30 @@
+{
+  "name": "sloptimizer-dev",
+  "private": true,
+  "description": "Development tooling for the plugins in this repo: linters, type checks, static tests and the evals.",
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.5",
+    "eslint": "10.13.0",
+    "eslint-plugin-regexp": "3.3.1",
+    "eslint-plugin-sonarjs": "4.2.2",
+    "eslint-plugin-unicorn": "78.0.0",
+    "jscpd": "5.4.1",
+    "knip": "6.42.1",
+    "markdownlint-cli2": "0.23.3",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.0"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "lint:ts": "eslint --cache --cache-location node_modules/.cache/eslint/ .",
+    "lint:md": "markdownlint-cli2 \"**/*.md\"",
+    "lint:format": "prettier --check --cache .",
+    "lint:dead": "knip",
+    "lint:dup": "jscpd scripts test",
+    "lint:pins": "node scripts/check-pins.ts",
+    "test:unit": "node --test \"test/**/*.test.ts\""
+  }
+}

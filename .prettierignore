@@ -1,0 +1,11 @@
+# Bootstrap templates carry placeholders Prettier would rewrite
+plugins/*/skills/*/resources/
+# Eval reports
+plugins/*/evals/results/
+# npm writes its lockfile
+package-lock.json
+# The library follows its own conventions in library/_meta/librarian.md
+library/
+.obsidian/
+# Story worktrees are other checkouts of this repository
+.worktrees/

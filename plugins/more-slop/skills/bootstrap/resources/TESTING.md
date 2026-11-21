@@ -15,7 +15,7 @@ Each must exit 0 before a PR is ready.
 
 - Setup: <env file and test account, by where they come from; seed data>.
 - Start: <command>, ready when <URL and port, simulator, or output line>.
-- Running in parallel: <how each worktree gets its own port, database and simulator, so several can run the app at once>.
+- Running in parallel: <how each workspace gets its own port, database and simulator, so several can run the app at once>.
 
 ## Validating a change
 

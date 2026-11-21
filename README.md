@@ -39,14 +39,14 @@ npx skills add ca77y/sloptimizer --list
 
 ## Layout
 
-```
+```text
 .claude-plugin/marketplace.json      # marketplace "sloptimizer", lists every plugin
 plugins/
   more-slop/
     .claude-plugin/plugin.json       # plugin manifest
     skills/
       <skill-name>/SKILL.md          # one folder per skill
-docs/                                # architecture, design, git, board, specs
+docs/                                # architecture, design, git, board, card templates, spikes
 library/                             # research wiki (Obsidian-compatible)
 ```
 
@@ -59,17 +59,20 @@ library/                             # research wiki (Obsidian-compatible)
 `name` (must match the folder) and `description` in the frontmatter.
 
 **A plugin:**
+
 1. Create `plugins/<plugin>/.claude-plugin/plugin.json` and `plugins/<plugin>/skills/`.
 2. Add an entry to `.claude-plugin/marketplace.json` with `"source": "./plugins/<plugin>"`.
 
 Skill names must be unique across the whole repo, because `npx skills`
 installs them into one flat folder.
 
-## Validate
+## Test
 
 ```sh
-./scripts/validate.sh
+make install   # once: the dev tools
+make check     # what CI runs: plugin validation, typecheck, static tests
+make smoke     # quick evals of each skill, about ten minutes; calls models
+make eval      # the full SWE-bench Pro eval, hours; calls models and runs Docker
 ```
 
-This runs `claude plugin validate` on the marketplace and every plugin,
-then `npx skills add . --list`. CI runs the same script.
+`TESTING.md` says what each level covers and how to add an eval case.

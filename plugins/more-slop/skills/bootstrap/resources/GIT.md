@@ -9,12 +9,13 @@ How work moves through git and the forge in this project.
 
 ## Workspace
 
-Every delivery runs in a worktree of its own, branched from the latest default branch, so deliveries run in parallel.
+How each delivery's work is isolated, so deliveries run in parallel. Every skill that changes the repo works as this section says.
 
-- Branch name: <pattern, for example `<card id lowercased>-<slug>`>.
-- Worktree path: <pattern, for example `.worktrees/<branch>` in the root checkout, ignored by git>.
-- Removing a worktree: <when, for example after its PR merges; by whom>.
-- Preparing a fresh worktree: <the commands run from its root, for example the dependency install and copying the env file, or "none">.
+- Branch name: <pattern, for example `<card id lowercased>-<slug>`>, from the latest default branch.
+- Where the work happens: <for example, a worktree of its own at `.worktrees/<branch>` in the root checkout, ignored by git>.
+- Preparing it: <the commands run from its root, for example the dependency install and copying the env file, or "none">.
+- Removing it: <when, for example after its PR merges; by whom>.
+- Scratch folder: <where a run keeps working files it never commits (specs, reproductions, proof, prototypes), for example `.tmp/` in each workspace, ignored by git>.
 - Spike prototypes: <local branch and worktree pattern, never pushed and deleted when done, or "none">.
 
 ## Commits and push

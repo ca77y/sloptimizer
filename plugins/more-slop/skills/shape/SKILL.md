@@ -1,15 +1,17 @@
 ---
 name: shape
-description: Turns an idea, request, bug report or open question into a well-formed card on the project's board — a story, bug or spike — and files it. Use when the user asks to shape, write, file, draft or refine a card, issue or ticket, or to run shape again on a card whose open questions have been answered.
+description: Turns an idea, request, bug report or open question into a well-formed card on the project's board, of a type its board declares (a story, bug or spike by default), and files it. Use when the user asks to shape, write, file, draft or refine a card, issue or ticket, or to run shape again on a card whose open questions have been answered.
 ---
 
 # Shape
 
-A card says why and what; the how belongs to whoever delivers it. Your output is the card on the board. The project's `docs/BOARD.md` says how the board is reached and what you may write to it; read it first. Without one, show the draft in chat instead of filing.
+A card says why and what; the how belongs to whoever delivers it. Your output is the card on the board. The project's `docs/BOARD.md` says how the board is reached, what you may write to it, and which types of card it has; read it first.
 
 ## Pick the type
 
-The user names it; otherwise it is a story. A **bug** is behaviour that fails as a user meets it. A **spike** is a question that must be answered before anything can be built. A named card keeps its type. Read `references/<type>.md` for the template and the bar the card must clear. A format `docs/BOARD.md` declares for the type wins over the template.
+`docs/BOARD.md` declares the types of card, each with its template, usually in `docs/templates/`. The user names the type; otherwise take the one whose template fits the request, or the default the board names. A named card keeps its type. Read the type's template for the card's layout, the bar before writing it, and its checklist.
+
+When the project has no `docs/BOARD.md`, or no template for the type, report that and point the user to the `bootstrap` skill, which sets them up.
 
 ## Know before you write
 
@@ -25,18 +27,18 @@ When a card already holds the same outcome for the same people, return that card
 
 ## Write it
 
-- Settle anything that leaves what the card delivers, and for whom, unchanged, and state it under Assumptions so a reader can object. Anything that would change the outcome goes under Open questions, and the card is filed with them.
+- Settle anything that leaves what the card delivers, and for whom, unchanged, and state it so a reader can object: under Assumptions when the template has that section, in your report otherwise. Anything that would change the outcome is an open question, and the card is filed with them: under Open questions when the template has that section, as a comment on the card otherwise.
 - Describe behaviour as users see it; the code moves while the card waits.
 - Keep only sentences that earn their place.
 
 ## Review
 
-Have the draft reviewed by someone who didn't write it: the `reviewer` agent when available, or any subagent you can spawn. Brief it with the draft, the checklist from the type's reference, and the project root, and keep your reasoning out of the brief. With no subagent, set the draft aside and re-read it cold against the checklist.
+Have the draft reviewed by someone who didn't write it: the `reviewer` agent when available, or any subagent you can spawn. Brief it with the draft, the checklist from the type's template, and the project root, and keep your reasoning out of the brief. With no subagent, set the draft aside and re-read it cold against the checklist.
 
 Fix what holds up, preferring a cut to an addition. What can't be settled becomes an open question. One round.
 
 ## File it
 
-Create or update the card through the bindings in `docs/BOARD.md`: the status it gives new cards, the labels it requires, and a relation to each card it overlaps or depends on. Leave the transitions it reserves for the user to the user.
+Create or update the card through the bindings in `docs/BOARD.md`: the status it gives new cards, the label from the type's template frontmatter, its priority as the template sets it (the frontmatter default, adjusted by any rule the template gives), the template's filled block as the description, and a relation to each card it overlaps or depends on. Leave the transitions it reserves for the user to the user.
 
 Report the card's link, its assumptions and its open questions. Open questions are answered on the card, and shape then runs on it again.

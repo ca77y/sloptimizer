@@ -5,7 +5,7 @@ description: Splits one ticket, card or larger request into the fewest small, in
 
 # Split
 
-One ticket goes in; several small cards come out, each a story that one PR delivers, together covering everything the ticket asks for. Your output is those cards on the board. The project's `docs/BOARD.md` says how the board is reached and what you may write to it; read it first. Without one, show the cards in chat instead of filing.
+One ticket goes in; several small cards come out, each a story that one PR delivers, together covering everything the ticket asks for. Your output is those cards on the board. The project's `docs/BOARD.md` says how the board is reached, what you may write to it, and which types of card it has; read it first. When the project has no `docs/BOARD.md`, or no template for a story type, report that and point the user to the `bootstrap` skill, which sets them up.
 
 ## Know the ticket
 
@@ -27,11 +27,11 @@ Have the plan reviewed by someone who didn't write it: the `reviewer` agent when
 
 ## Write the cards
 
-Write each part as a story by `references/story.md`, or by the story format `docs/BOARD.md` declares, which wins. Give every card the constraints that hold for the whole set. Each card stands on its own: a reader who never saw the ticket learns from it why the work matters. Anything that would change a part's outcome goes under its Open questions.
+Write each part as a story card, of the type `docs/BOARD.md` declares that fits it, such as a feature or an improvement, by that type's template. Give every card the constraints that hold for the whole set. Each card stands on its own: a reader who never saw the ticket learns from it why the work matters. Anything that would change a part's outcome goes under its Open questions.
 
 ## File them
 
-Create the cards through the bindings in `docs/BOARD.md`, blockers first, so each dependent card can name the cards that block it. Use the status it gives new cards, the labels it requires, and its blocking relation for each blocker; relate each card to the source ticket where the board binds a relation for that. When a relation has no binding, list it on the card under References instead.
+Create the cards through the bindings in `docs/BOARD.md`, blockers first, so each dependent card can name the cards that block it. Use the status it gives new cards, the label from each card's template frontmatter, its priority as the template sets it (the frontmatter default, adjusted by any rule the template gives), and its blocking relation for each blocker; relate each card to the source ticket where the board binds a relation for that. When a relation has no binding, list it on the card under References instead.
 
 Leave the source ticket as it is, except for a comment that lists the cards it was split into. Closing it, or moving it to any status, is the user's call.
 

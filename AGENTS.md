@@ -3,17 +3,21 @@
 Claude Code plugins under `plugins/`, listed by the `sloptimizer` marketplace in
 `.claude-plugin/`; the same repo is a skills source for `npx skills`.
 
-- **plugins/<plugin>/** — one plugin: its manifest and its skills.
+- **`plugins/<plugin>/`** — one plugin: its manifest, skills, agents and smoke evals.
 - **scripts/** — repo tooling, run through the `Makefile`.
-- **docs/** — architecture, design, git, board, specs, spikes.
-- **library/** — research wiki; evidence, never implementation authority.
+- **test/** — static tests.
+- **docs/** — architecture, design, git, board, card templates, spikes.
+- **library/** — persistent store of research and knowledge; evidence, never implementation authority.
 
-`make help` lists the targets; `make check` is what CI runs.
+`make help` lists the targets. `make lint` runs every static check and the
+pre-commit hook runs it; `make test` runs the unit tests; `make check` is what CI
+runs; `make smoke` and `make eval` call models.
 
-Outside a delivery, work on `master` in the root checkout: create no branch or
-worktree, and commit only when the user asks. Only a delivery request creates a
-story branch in its own worktree and ends in a PR.
+## Rules
 
+- Outside a delivery, work on `master` in the root checkout: create no branch or
+  worktree, and commit only when the user asks. Only a delivery request creates a
+  story branch in its own worktree and ends in a PR.
 - Write TypeScript, not JavaScript, wherever the runtime allows it.
 - Change a plugin's `version` only when the user asks for that bump.
 - Run a check that calls models only when the user asks. A delivery request
@@ -27,13 +31,22 @@ story branch in its own worktree and ends in a PR.
   only for a hard guardrail with no positive form, and pair it with the
   target.
 
-Read before acting:
+## Where to look
 
-- **Git, branches, commits, PRs, review** — `docs/GIT.md`.
-- **Stories and Linear** — `docs/BOARD.md`.
-- **Checking and validating a change** — `TESTING.md`.
-- **How the repo is built** — `docs/ARCHITECTURE.md` and `docs/DESIGN.md`.
+Read a file when the task reaches what it covers:
 
-## Library
-
-Read `library/_meta/librarian.md` before library work.
+- `docs/GIT.md` — before creating a branch or worktree, committing, pushing or
+  opening a PR: naming, isolation, commit convention, PR commands, what agents
+  never do in git.
+- `docs/BOARD.md` — before reading, filing, updating or moving a Linear card:
+  the bindings, card types and which moves belong to the user.
+- `docs/templates/<type>.md` — before writing a card of that type: its fields,
+  layout and checklist.
+- `TESTING.md` — before calling a change done, or when adding an eval case:
+  the checks, how each kind of change is validated and proven, and review.
+- `docs/ARCHITECTURE.md` — when changing how plugins, skills or agents are built,
+  or what they read from a project.
+- `docs/DESIGN.md` — when writing or changing a skill, agent or reference: the
+  principles they are designed against.
+- `library/_meta/librarian.md` — before adding to or answering from the library:
+  its conventions.

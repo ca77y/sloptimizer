@@ -19,11 +19,10 @@ How this project's board is reached and what may be written to it. An operation 
 ## Cards
 
 - Identity: <what the card id names: branches, spike findings `docs/spikes/<id>-<slug>.md`>.
-- Types: <the label for a story (feature or improvement), a bug, a spike>. Priority: <the scale>.
+- Types: one line per type of card: its name and its template `docs/templates/<type>.md`, whose frontmatter gives the type's label, summary and default priority, and whose body gives the card's layout, the bar before writing it, and its checklist. <for example: Feature, `docs/templates/feature.md`>. A request names its type; otherwise it is <the default type>.
+- Priority: <the scale>.
 - Dependencies: <blocking relations, or "none" when the tracker has none>.
-- Story layout: the tracker's title is the title; the body opens with one summary paragraph, then `## Why`, `## Scope`, `## Out of scope`, `## Acceptance criteria`, `## Assumptions`, `## Open questions`, `## References`, empty optional sections dropped.
-- Bug layout: the title states the failure as a user meets it; the body holds `## Observed`, `## Expected`, `## Steps`, `## Assumptions`, `## Open questions`, `## References`.
-- Spike layout: the title is the question, short; the body holds `## Question`, `## What counts as an answer`, `## Conditions`, `## Assumptions`, `## Open questions`, `## References`.
+- Layout: the tracker's title is the card's title; the description is the template's fenced block, filled, with empty optional sections dropped. The frontmatter goes into tracker fields, never into the description.
 
 ## Statuses
 

@@ -1,3 +1,0 @@
-# Library Maintenance Log
-
-TODO

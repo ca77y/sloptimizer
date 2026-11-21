@@ -5,19 +5,19 @@ description: Fixes a reported bug end to end — has it reproduced independently
 
 # Bugfix
 
-A bug you can reproduce has a clear check for the fix; one you can't stays unfixed. Your output is a PR that shows the bug before and after. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (branches, commits, PRs) and `TESTING.md` (checks and how to validate) first; each one that exists wins over the defaults here.
+A bug you can reproduce has a clear check for the fix; one you can't stays unfixed. Your output is a PR that shows the bug before and after. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (work isolation, branches, commits, PRs) and `TESTING.md` (checks and how to validate) first; each one that exists wins over the defaults here.
 
 ## Reproduce
 
 Read the Bug card with its comments, or take the report from the request.
 
-Work in a worktree of your own, so other runs can go on in parallel. Create it with its branch from the latest default branch, named and placed as `docs/GIT.md` says; without one, name the branch `<card id>-<slug>` (or a slug of the request) and put the worktree at `.worktrees/<branch>` in the root checkout. Prepare it as `docs/GIT.md` says, and do everything from here on inside it: every command, every file, every subagent brief, which names the worktree as the project root.
+Isolate your work as `docs/GIT.md` says, so other runs can go on in parallel: it sets the branch, where the work happens, and how that place is prepared. With no `docs/GIT.md`, work in a worktree of your own at `.worktrees/<branch>` in the root checkout, on a branch `<card id>-<slug>` (or a slug of the request) from the latest default branch. Do everything from here on inside that workspace: every command, every file, every subagent brief, which names it as the project root.
 
-Have it reproduced by someone who won't write the fix: the `qa` agent when available, or any subagent you can spawn, briefed with the report and the worktree only. With no subagent, reproduce it yourself under `.tmp/qa/` before reading the code you suspect.
+Have it reproduced by someone who won't write the fix: the `qa` agent when available, or any subagent you can spawn, briefed with the report, the workspace and its scratch folder only (`docs/GIT.md` names it; `.tmp/` by default). With no subagent, reproduce it yourself under `qa/` in the scratch folder before reading the code you suspect.
 
 - **Reproduced:** carry on with its reproduction.
-- **Not reproduced:** comment on the card with what was tried and why it fell short, remove the worktree and its unpushed branch, and stop. Report the same to the user.
-- **Couldn't run:** report the missing prerequisite, remove the worktree and its unpushed branch, and stop, leaving the card as it is.
+- **Not reproduced:** comment on the card with what was tried and why it fell short, remove the workspace and its unpushed branch, and stop. Report the same to the user.
+- **Couldn't run:** report the missing prerequisite, remove the workspace and its unpushed branch, and stop, leaving the card as it is.
 
 ## Fix
 
@@ -30,7 +30,7 @@ Start the card on the board as `docs/BOARD.md` says.
 
 ## Confirm
 
-Run the reported steps in the app the way `TESTING.md` says, on the port or device it gives this worktree, and capture the proof it names. Then have the change reviewed as `TESTING.md` says. The check before the PR is independent: a fresh `qa`, briefed with the report as the change asked for, the base branch, the reproduction to rerun, and the worktree. The reproduction and the reported steps must now pass. With no subagent, rerun them yourself and re-read the diff cold. Fix what holds up. One round.
+Run the reported steps in the app the way `TESTING.md` says, on the port or device it gives this workspace, and capture the proof it names. Then have the change reviewed as `TESTING.md` says. The check before the PR is independent: a fresh `qa`, briefed with the report as the change asked for, the base branch, the reproduction to rerun, the workspace and its scratch folder. The reproduction and the reported steps must now pass. With no subagent, rerun them yourself and re-read the diff cold. Fix what holds up. One round.
 
 ## Ship it
 

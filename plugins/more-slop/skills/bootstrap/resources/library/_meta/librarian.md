@@ -1,6 +1,6 @@
 # Librarian
 
-Conventions for the {{PROJECT_NAME}} research library, which covers {{TOPICS}}. It holds evidence and synthesis, never product or architecture decisions; those live in `docs/`.
+Conventions for the {{PROJECT_NAME}} library. It is the project's persistent store of research and knowledge: whatever is found out for the project, such as how a tool works, which similar projects exist, or what people think of something, is saved here so it is never looked up twice. It holds evidence and synthesis, never product or architecture decisions; those live in `docs/`.
 
 ## Files
 

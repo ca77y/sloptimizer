@@ -1,0 +1,36 @@
+name: Check
+
+# The gate the pre-commit hook can't be: every static check, and the unit tests, on each PR and each push to master.
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+          cache: npm
+      - run: npm ci
+      # make lint validates the plugins with the Claude Code CLI, which needs no credentials for that.
+      - run: npm install --global @anthropic-ai/claude-code
+      - run: make lint
+      - run: make discovery
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+          cache: npm
+      - run: npm ci
+      - run: make test

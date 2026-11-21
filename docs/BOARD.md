@@ -18,12 +18,19 @@ Configuration does not authorize execution; the user's request does. An operatio
 
 ## Cards
 
-- Identity and naming: the identifier names everything that belongs to the card: the spec `docs/specs/<lowercase identifier>-<slug>/`, the spike findings `docs/spikes/<lowercase identifier>-<slug>.md`, and the branch (`docs/GIT.md`).
-- Type and priority: exactly one type label: `Feature` or `Improvement` for a story, `Bug` for a bug, `Spike` for a spike, `Research` for open-ended research that is split into stories before any spec or branch. Priority `1` Urgent · `2` High · `3` Medium · `4` Low; priority and blocking relations are the only delivery order, with no milestones or phases.
+- Identity and naming: the identifier names everything that belongs to the card: the spike findings `docs/spikes/<lowercase identifier>-<slug>.md`, and the branch (`docs/GIT.md`).
+- Types: exactly one per card, each with its template in `docs/templates/`, whose frontmatter gives the type's label, summary and default priority:
+  - Feature, `docs/templates/feature.md`.
+  - Improvement, `docs/templates/improvement.md`.
+  - Bug, `docs/templates/bug.md`.
+  - Spike, `docs/templates/spike.md`.
+  - Research, `docs/templates/research.md`.
+
+  A request names its type; otherwise it is a Feature.
+
+- Priority: `1` Urgent · `2` High · `3` Medium · `4` Low; priority and blocking relations are the only delivery order, with no milestones or phases.
 - Dependencies: `blockedBy` / `blocks` relations. No sub-issues: one card is one issue is one PR.
-- Story format: the Linear title is the Title; the body follows `docs/_templates/story.md` with no `#` heading and empty optional sections dropped: the opening paragraph is the Summary, then `## Why`, `## Scope`, `## Out of scope`, `## Acceptance criteria` (one observable pass/fail behaviour per bullet), `## Assumptions`, `## Open questions`, `## References`.
-- Bug format: the Linear title is the Title, stating the failure as a user meets it; the body holds `## Observed`, `## Expected`, `## Steps`, `## Assumptions`, `## Open questions`, `## References`, with no `#` heading and empty optional sections dropped.
-- Spike format: the Linear title is the Title, the question short; the body holds `## Question`, `## What counts as an answer`, `## Conditions`, `## Assumptions`, `## Open questions`, `## References`, with no `#` heading and empty optional sections dropped.
+- Layout: the Linear title is the card's title; the description is the template's fenced block, filled, with empty optional sections dropped. The frontmatter goes into Linear fields, never into the description.
 
 Linear rewrites `-` bullets to `*` and wraps bare URLs in `<…>` on save; that is cosmetic.
 

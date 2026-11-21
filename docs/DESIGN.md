@@ -29,8 +29,9 @@ A skill is a short brief for a capable model, not a process for a weak one.
 
 Any number of runs can work at once, on different cards, without stepping on each other.
 
-- **Every run that changes the repo works in a worktree of its own**, branched from the latest default branch, and every command, file and subagent stays inside it. The root checkout is for work outside a delivery.
-- **Each worktree runs the app on its own port, database and device**, as `TESTING.md` says.
-- **Scratch work goes under the worktree's `.tmp/`**, never a shared path.
+- **Every run that changes the repo works in a workspace of its own**, isolated as the project's `docs/GIT.md` says: normally a worktree branched from the latest default branch. Every command, file and subagent stays inside it. The root checkout is for work outside a delivery.
+- **The isolation rules live in `docs/GIT.md`, not in the skills.** A skill follows them as declared, so a project, or an eval's scaffold, can declare its own.
+- **Each workspace runs the app on its own port, database and device**, as `TESTING.md` says.
+- **Scratch work goes under the workspace's `.tmp/`**, never a shared path.
 - **Shared files are append-friendly**: one line per entry, sorted, each run adding only its own lines, so parallel PRs merge cleanly. Git history is the log.
 - **Each PR brings in the latest default branch before it's pushed.**
