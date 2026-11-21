@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "sloptimizer",
+  "description": "Claude Code plugins and agent skills from sloptimizer.",
+  "owner": {
+    "name": "ca77y",
+    "url": "https://github.com/ca77y"
+  },
+  "plugins": [
+    {
+      "name": "more-slop",
+      "source": "./plugins/more-slop",
+      "description": "Skills for Claude Code and any agent supported by npx skills.",
+      "category": "productivity"
+    }
+  ]
+}
