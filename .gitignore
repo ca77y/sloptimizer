@@ -3,3 +3,9 @@ node_modules/
 skills-lock.json
 .agents/
 .claude/skills/
+
+# story worktrees (local scratch) — see docs/GIT.md
+.claude/worktrees/
+
+# Obsidian local state
+.obsidian/

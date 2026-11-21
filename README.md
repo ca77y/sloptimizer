@@ -31,7 +31,7 @@ npx skills add ca77y/sloptimizer
 npx skills add https://github.com/ca77y/sloptimizer/tree/master/plugins/more-slop
 
 # One skill only
-npx skills add ca77y/sloptimizer --skill hello-slop
+npx skills add ca77y/sloptimizer --skill shape
 
 # See what's available
 npx skills add ca77y/sloptimizer --list
@@ -46,6 +46,8 @@ plugins/
     .claude-plugin/plugin.json       # plugin manifest
     skills/
       <skill-name>/SKILL.md          # one folder per skill
+docs/                                # architecture, design, git, board, specs
+library/                             # research wiki (Obsidian-compatible)
 ```
 
 `npx skills` reads `.claude-plugin/marketplace.json` and scans each plugin's
