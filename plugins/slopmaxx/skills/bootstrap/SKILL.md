@@ -1,6 +1,6 @@
 ---
 name: bootstrap
-description: Sets a project up for the other skills, together with the user — writes docs/BOARD.md, docs/GIT.md, TESTING.md and the research library, or checks and fixes existing ones. Use when the user asks to bootstrap, set up or onboard a project.
+description: Sets a project up for the other skills, together with the user — writes docs/BOARD.md, docs/GIT.md, TESTING.md and the research library, or checks and fixes existing ones.
 disable-model-invocation: true
 ---
 
@@ -25,11 +25,15 @@ Then point the root `AGENTS.md` or `CLAUDE.md` to each of these files in a line 
 Go one file at a time. For each:
 
 1. Read what the repo and the tracker already show: remotes and branches, commit history, CI config, the package manifest, build files, existing tests and docs, the tracker's teams, statuses and labels through its connected tools.
-2. Draft the file from those facts, and propose an answer for every choice they leave open, with the reason.
-3. Show the user the draft and the choices, a few at a time, and ask them to confirm or correct each: which types of card the board has (propose story, bug and spike, and ask whether stories split into features and improvements and whether research gets its own type), each template's sections and checklist,, who may move a card to which status, where cards are filed, how each delivery's work is isolated (propose a worktree per delivery at `.worktrees/<branch>` in the root checkout, with `.tmp/` in it as the scratch folder), what agents may never do in git, which kinds of change exist, how each is validated and what proof it leaves (screenshots, traces, logs) and how that proof reaches the PR, who reviews and what a review checks, where the test account and env file come from, and anything else only they can decide.
+2. Draft the file from those facts, and propose an answer for every choice they leave open, with the reason. For a choice about what agents may do, propose the narrower option; a wider one goes in only when the user states it.
+3. Show the user the draft and the choices, a few at a time, and ask them to confirm or correct each:
+   - **Board:** which types of card it has (propose story, bug and spike, and ask whether stories split into features and improvements and whether research gets its own type), each template's sections and checklist, who may move a card to which status, and where cards are filed.
+   - **Git:** how each delivery's work is isolated (propose a worktree per delivery at `.worktrees/<branch>` in the root checkout, with `.tmp/` in it as the scratch folder), and what agents may never do.
+   - **Testing:** which kinds of change exist, how each is validated, what proof it leaves (screenshots, traces, logs) and how that proof reaches the PR, who reviews and what a review checks, and where the test account and env file come from.
+   - Anything else only they can decide.
 4. Write the file once the user has settled its choices.
 
-A binding goes in only when it works on the tracker or repo as written; check each read binding by using it once. A value nobody can give yet stays as a `TODO:` line. Record where a credential comes from, never the credential. A choice that would widen what agents may do is the user's to state, never yours to propose as the default.
+A binding goes in only when it works on the tracker or repo as written; check each read binding by using it once. A value nobody can give yet stays as a `TODO:` line. Record where a credential comes from, never the credential.
 
 ## Finish
 

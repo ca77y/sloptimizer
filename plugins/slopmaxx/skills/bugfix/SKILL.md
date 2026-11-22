@@ -1,20 +1,20 @@
 ---
 name: bugfix
-description: Fixes a reported bug end to end — has it reproduced independently, fixes it test first, confirms the reproduction now passes, and opens a PR showing before and after. Use when the user asks to fix, debug or deliver a bug, a Bug card, or something broken, failing or slow.
+description: Fixes a reported bug and opens a pull request that shows it before and after — reproduced independently, fixed test first.
 disable-model-invocation: true
 ---
 
 # Bugfix
 
-A bug you can reproduce has a clear check for the fix; one you can't stays unfixed. Your output is a PR that shows the bug before and after. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (work isolation, branches, commits, PRs) and `TESTING.md` (checks and how to validate) first; each one that exists wins over the defaults here.
+A bug you can reproduce has a clear check for the fix; one you can't stays unfixed. Your output is a PR that shows the bug before and after. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (work isolation, branches, commits, PRs) and `TESTING.md` (checks and how to validate) first. Carry the work through to the pull request in one go: work through an ordinary obstacle, such as a failing command or a timeout, put a choice only the user can make under **Needs you** and carry on, and stop early only when you can't go on without the user.
 
 ## Reproduce
 
 Read the Bug card with its comments, or take the report from the request.
 
-Isolate your work as `docs/GIT.md` says, so other runs can go on in parallel: it sets the branch, where the work happens, and how that place is prepared. With no `docs/GIT.md`, work in a worktree of your own at `.worktrees/<branch>` in the root checkout, on a branch `<card id>-<slug>` (or a slug of the request) from the latest default branch. Do everything from here on inside that workspace: every command, every file, every subagent brief, which names it as the project root.
+Isolate your work as `docs/GIT.md` says, so other runs can go on in parallel: it sets the branch, where the work happens, and how that place is prepared. Do everything from here on inside that workspace: every command, every file, every subagent brief, which names it as the project root.
 
-Have it reproduced by someone who won't write the fix: the `qa` agent when available, or any subagent you can spawn, briefed with the report, the workspace and its scratch folder only (`docs/GIT.md` names it; `.tmp/` by default). With no subagent, reproduce it yourself under `qa/` in the scratch folder before reading the code you suspect.
+Have it reproduced by someone who won't write the fix: the `qa` agent, briefed with the report, the workspace and its scratch folder only (`docs/GIT.md` names it).
 
 - **Reproduced:** carry on with its reproduction.
 - **Not reproduced:** comment on the card with what was tried and why it fell short, remove the workspace and its unpushed branch, and stop. Report the same to the user.
@@ -31,7 +31,7 @@ Start the card on the board as `docs/BOARD.md` says.
 
 ## Confirm
 
-Run the reported steps in the app the way `TESTING.md` says, on the port or device it gives this workspace, and capture the proof it names. Then have the change reviewed as `TESTING.md` says. The check before the PR is independent: a fresh `qa`, briefed with the report as the change asked for, the base branch, the reproduction to rerun, the workspace and its scratch folder. The reproduction and the reported steps must now pass. With no subagent, rerun them yourself and re-read the diff cold. Fix what holds up. One round.
+Run the reported steps in the app the way `TESTING.md` says, on the port or device it gives this workspace, and capture the proof it names. Before the PR, always have a fresh `qa` agent check the fix: brief it with the bug report, the base branch, the reproduction to rerun, the workspace and its scratch folder. The reproduction and the reported steps must now pass. Fix what holds up. One round. Then run any review `TESTING.md` puts before the PR.
 
 ## Ship it
 

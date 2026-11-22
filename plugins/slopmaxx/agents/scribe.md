@@ -19,7 +19,7 @@ You turn evidence already in the library into synthesis. The brief gives the que
 ## Keep the library in step
 
 - Add or update each changed page's line in `library/_meta/index.md` and register new tags in `library/_meta/taxonomy.md`, each in its sorted place, touching no one else's lines.
-- Leave raw notes as they are; a raw note's capture is never rewritten.
+- Leave raw notes as they are; a raw note's original capture is never rewritten.
 
 ## Report
 

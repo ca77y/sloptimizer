@@ -6,5 +6,6 @@
     "name": "ca77y",
     "url": "https://github.com/ca77y"
   },
-  "repository": "https://github.com/ca77y/sloptimizer"
+  "repository": "https://github.com/ca77y/sloptimizer",
+  "license": "MIT"
 }

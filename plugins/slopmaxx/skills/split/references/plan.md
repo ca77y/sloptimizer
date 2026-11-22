@@ -6,7 +6,7 @@ Cut the ticket into the fewest parts that together cover all of it. Every requir
 
 - **Its own outcome:** what a user or the system can do once it ships, stated as what is wanted, never how to build it.
 - **A vertical slice:** a narrow path through every layer the outcome needs, so it can be demoed or checked once merged. A layer on its own (all the schema, then all the API) is a slice of the build, not of the outcome.
-- **One PR:** small enough for one PR and one fresh context window, with at most 20 acceptance criteria.
+- **One PR:** small enough for one PR and one fresh context window.
 - **Checkable on its own:** deliverable and checkable without another part's code merged first, unless the work makes an order unavoidable.
 - **A key and its blockers:** a short key, unique in the plan, and the keys of the parts that must merge before it can start. A part with no blockers can start at once.
 

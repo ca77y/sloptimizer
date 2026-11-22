@@ -32,4 +32,4 @@ How each delivery's work is isolated, so deliveries run in parallel. Every skill
 
 ## Restrictions
 
-- <What agents never do without the user asking: for example, merge, force-push, rewrite pushed history, tag, release, delete remote branches.>
+- <What agents never do without the user asking: for example, commit to or push the default branch, merge, force-push, rewrite pushed history, tag, release, delete remote branches.>

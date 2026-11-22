@@ -40,5 +40,4 @@ priority: Medium
 ## Checklist
 
 - Each criterion passes or fails with nothing in between, seen from outside the code.
-- At most 20 criteria.
 - No implementation and no code locations.

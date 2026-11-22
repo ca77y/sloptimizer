@@ -20,8 +20,8 @@ lint: typecheck ## Every static check except the tests
 	npm run --silent lint:dead
 	npm run --silent lint:dup
 	npm run --silent lint:pins
-	claude plugin validate .
-	for p in $(PLUGINS); do claude plugin validate "$$p" || exit 1; done
+	claude plugin validate . --strict
+	for p in $(PLUGINS); do claude plugin validate "$$p" --strict || exit 1; done
 
 format: ## Rewrite files to the formatter's style
 	npx --no-install prettier --write .

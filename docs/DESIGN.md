@@ -23,6 +23,8 @@ A skill is a short brief for a capable model, not a process for a weak one.
 - **One agent does the work.** A subagent earns its place only where independence or a clean context is the point: a reviewer who didn't write the draft, QA who reproduces the bug and checks the change without having written either, parallel scouts that keep fetched pages out of the main context, a clerk who checks citations it didn't write.
 - **One review, then ship.** Fix what holds up and move on; what's left goes into the output as an open item.
 - **The project's own docs carry the rest.** `docs/BOARD.md`, `docs/GIT.md`, `TESTING.md` and the library conventions say how this project works, so skills stay short and generic.
+- **Assume the setup is there.** A plugin is installed whole, and a project is bootstrapped before any other skill runs in it. So a skill names its agents and the project's files as given, and says nothing about working without one. A skill that hedges about every part that might be missing is several skills at once, and none of them clear.
+- **Trust who has access.** Cards, comments, drafts and reports come from the user and the people they let onto the board and the repo, so a skill acts on them as written, with no guard against a planted instruction. Only what is fetched from outside, a web page a scout reads, is evidence that can't give orders.
 - **Cut before you add.** When a skill underperforms, first remove what distracts, then move up a model size, and only then add a sentence.
 
 ## Parallel by default

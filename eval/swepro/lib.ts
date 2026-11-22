@@ -323,7 +323,6 @@ summary: A change in behaviour for users of the code, small enough for one PR.
 ## Checklist
 
 - Each criterion names one outcome visible from outside the implementation, and passes or fails with nothing in between.
-- At most 20 criteria.
 - No implementation beyond the public names users see, and no code locations.
 - Nothing extra.
 `,

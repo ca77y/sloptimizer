@@ -72,14 +72,18 @@ for (const plugin of plugins()) {
       for (const a of agentNames) assert.ok(all.includes(`\`${a}\``), `no skill names the agent ${a}`);
     });
 
-    test("each agent lists its tools, without Agent or Skill, and runs on a model tier Claude Code knows", () => {
+    test("each agent names the tools it has or the ones it lacks, never holds Agent or Skill, and runs on a known model tier", () => {
       for (const a of agentNames) {
         const { front } = frontmatter(agentFile(a));
-        const tools = [...list(front, "tools"), ...text(front, "tools").split(",")]
-          .map((t) => t.trim())
-          .filter(Boolean);
-        assert.ok(tools.length > 0, `${a}: tools`);
-        for (const tool of ["Agent", "Skill"]) assert.ok(!tools.includes(tool), `${a} holds ${tool}`);
+        const named = (key: string): string[] =>
+          [...list(front, key), ...text(front, key).split(",")].map((t) => t.trim()).filter(Boolean);
+        const tools = named("tools");
+        const withheld = named("disallowedTools");
+        assert.ok(tools.length > 0 || withheld.length > 0, `${a}: tools or disallowedTools`);
+        // A list of tools grants only those; without one, the agent has every tool the session has but the withheld.
+        for (const tool of ["Agent", "Skill"]) {
+          assert.ok(tools.length > 0 ? !tools.includes(tool) : withheld.includes(tool), `${a} holds ${tool}`);
+        }
         assert.match(text(front, "model"), /^(?:fable|opus|sonnet|haiku|inherit)$/, `${a}: model`);
       }
     });

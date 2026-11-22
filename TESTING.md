@@ -8,7 +8,7 @@ Each must exit 0 before a PR is ready. `make check` runs them all; CI runs `make
 pre-commit hook runs `make lint`.
 
 - Format: Prettier, in `make lint`; `make format` rewrites files.
-- Lint: `make lint`: markdownlint, ESLint, knip, jscpd, pinned dev tools, and `claude plugin validate`.
+- Lint: `make lint`: markdownlint, ESLint, knip, jscpd, pinned dev tools, and `claude plugin validate --strict`, which fails on a warning.
 - Typecheck: `make typecheck`, also in `make lint`.
 - Tests: `make test`, or `node --test <file>` for one file.
 

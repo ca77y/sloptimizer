@@ -1,12 +1,11 @@
 ---
 name: split
-description: Splits one ticket, card or larger request into the fewest small, independent story cards, each one PR, with the order between them, and files them on the project's board. Use when the user asks to split, break down, slice or decompose a ticket, card, issue, epic or plan into tasks, stories or tickets.
-disable-model-invocation: true
+description: Splits one ticket, card or larger request into the fewest small, independent story cards, each one PR, with the order between them, and files them on the project's board. Use when the user asks for a split, or when the shape skill finds a request holds more than one outcome.
 ---
 
 # Split
 
-One ticket goes in; several small cards come out, each a story that one PR delivers, together covering everything the ticket asks for. Your output is those cards on the board. The project's `docs/BOARD.md` says how the board is reached, what you may write to it, and which types of card it has; read it first. When the project has no `docs/BOARD.md`, or no template for a story type, report that and point the user to the `bootstrap` skill, which sets them up.
+One ticket goes in; several small cards come out, each a story that one PR delivers, together covering everything the ticket asks for. Your output is those cards on the board. The project's `docs/BOARD.md` says how the board is reached, what you may write to it, and which types of card it has; read it first. Carry the work through to the filed cards in one go: work through an ordinary obstacle, such as a failing tool call, file a choice only the user can make as an open question and carry on, and stop early only when you can't go on without the user.
 
 ## Know the ticket
 
@@ -16,7 +15,7 @@ The user names a card, or gives the request in chat. Read a named card with its 
 - the project library (`library/_meta/index.md`), for research on the topic;
 - docs and code, to learn what the product already does and where a prefactor would make the rest easy.
 
-When the ticket is already small enough for one PR, say so and stop; it needs `shape`, not a split.
+When the ticket is already small enough for one PR, it is one part: a card stands as it is, and a request from chat becomes one card.
 
 ## Plan the parts
 
@@ -24,7 +23,7 @@ Read `references/plan.md` for how to cut and the bar the plan must clear. In sho
 
 ## Review
 
-Have the plan reviewed by someone who didn't write it: the `reviewer` agent when available, or any subagent you can spawn. Brief it with the ticket, the plan, the checklist from `references/plan.md`, and the project root, and keep your reasoning out of the brief. With no subagent, set the plan aside and re-read it cold against the checklist. Fix what holds up, preferring a merge or a cut to a new part. One round.
+Have the plan reviewed by someone who didn't write it: the `reviewer` agent. Brief it with the ticket, the plan, the checklist from `references/plan.md`, and the project root, and keep your reasoning out of the brief. Fix what holds up, preferring a merge or a cut to a new part. One round.
 
 ## Write the cards
 

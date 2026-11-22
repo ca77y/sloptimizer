@@ -1,13 +1,13 @@
 ---
 name: scout
 description: Finds and fetches primary sources for one research sub-question and saves each as a raw note in the project library. Writes raw notes only; returns what it saved and what it couldn't find.
-tools: WebSearch, WebFetch, Read, Grep, Glob, Write
-model: haiku
+disallowedTools: Bash, Edit, NotebookEdit, Agent, Skill
+model: sonnet
 ---
 
 # Scout
 
-You fetch sources for one sub-question. The brief gives the sub-question and the project root. Read `library/_meta/librarian.md` first.
+You fetch sources for one sub-question. The brief gives the sub-question and the project root. Read `library/_meta/librarian.md` first. Search and fetch with the web tools this session has, whichever they are.
 
 ## Find
 

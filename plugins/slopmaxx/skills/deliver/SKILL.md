@@ -1,22 +1,22 @@
 ---
 name: deliver
-description: Takes a story card, or a described change, to a reviewed pull request — tests first, validated by running the app, with a PR description written for the reviewer. Use when the user asks to deliver, implement, build or ship a card, ticket, story or change.
+description: Takes a story card, or a described change, to a reviewed pull request — tests first, validated by running the app, with a PR description written for the reviewer.
 disable-model-invocation: true
 ---
 
 # Deliver
 
-The card says why and what; you decide how, and your output is a pull request a reviewer can trust. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (work isolation, branches, commits, PRs) and `TESTING.md` (checks and how to validate) first; each one that exists wins over the defaults here.
+The card says why and what; you decide how, and your output is a pull request a reviewer can trust. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (work isolation, branches, commits, PRs) and `TESTING.md` (checks and how to validate) first. Carry the work through to the pull request in one go: work through an ordinary obstacle, such as a failing command or a timeout, put a choice only the user can make under **Needs you** and carry on, and stop early only when you can't go on without the user.
 
 ## Start
 
 Read the card with its comments, or take the change from the request. Start the card on the board as `docs/BOARD.md` says.
 
-Isolate your work as `docs/GIT.md` says, so other runs can go on in parallel: it sets the branch, where the work happens, and how that place is prepared. With no `docs/GIT.md`, work in a worktree of your own at `.worktrees/<branch>` in the root checkout, on a branch `<card id>-<slug>` (or a slug of the request) from the latest default branch. Do everything from here on inside that workspace: every command, every file, every subagent brief, which names it as the project root.
+Isolate your work as `docs/GIT.md` says, so other runs can go on in parallel: it sets the branch, where the work happens, and how that place is prepared. Do everything from here on inside that workspace: every command, every file, every subagent brief, which names it as the project root.
 
 Where the card is ambiguous or leaves a choice open, take the most reasonable reading, carry on, and list it under **Needs you**. Read the code the change touches and its tests before writing any.
 
-Beyond a trivial change, write a spec by `references/spec.md` to `spec.md` in the scratch folder `docs/GIT.md` names (`.tmp/` in the workspace by default) before the first test, and build from it. It is the plan and the status in one place: keep it current as you work, so a restarted session reads it first and carries on. It is never committed; what the reviewer needs from it goes into the PR description.
+Then list the vertical slices the change needs: each adds one behaviour, proven by one failing test. A change that is a single slice needs no spec. With more than one, write a spec by `references/spec.md` to `spec.md` in the scratch folder `docs/GIT.md` names before the first test, with the slices in build order, and build from it. It is the plan and the status in one place: keep it current as you work, so a restarted session reads it first and carries on. It is never committed; what the reviewer needs from it goes into the PR description.
 
 ## Build
 
@@ -30,7 +30,7 @@ Beyond a trivial change, write a spec by `references/spec.md` to `spec.md` in th
 
 Validate each acceptance criterion in the running app the way `TESTING.md` says for its kind of change, on the port or device it gives this workspace, and capture the proof it names for that kind: screenshots, traces, responses, logs.
 
-Then have the change reviewed as `TESTING.md` says. The check before the PR is independent: the `qa` agent when available, or any subagent you can spawn, briefed with the card, the base branch, the workspace and its scratch folder, with your reasoning kept out. With no subagent, re-read the diff cold against the card. Fix what holds up. One round. A criterion still not met, or without its proof, goes under **Not done**, with why.
+Before the PR, always have the `qa` agent check the change: brief it with the card, the base branch, the workspace and its scratch folder, and keep your reasoning out. Fix what holds up. One round. Then run any review `TESTING.md` puts before the PR. A criterion still not met, or without its proof, goes under **Not done**, with why.
 
 ## Ship it
 
