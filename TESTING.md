@@ -65,6 +65,7 @@ A criterion no kind covers, or one that couldn't be checked, is listed under **N
 
 ## Blind spots
 
-- `bootstrap` and `agy-review` have no smoke case.
+- `bootstrap` has no smoke case: it works through its files with the user.
+- `agy-review` has no smoke case: `claude plugin eval` runs shell commands in a sandbox that can't read the home folder or open a local port, and `agy` needs both to sign in and start.
 - Smoke cases never reach a real tracker or forge, and no grader runs the code a skill wrote.
 - Smoke runs once on one model unless asked otherwise, without a run of plain Claude Code to compare with.

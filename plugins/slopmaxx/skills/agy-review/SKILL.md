@@ -5,26 +5,27 @@ description: Has Google's Antigravity CLI (agy), on a Gemini model, review the c
 
 # agy review
 
-A second model reviews the branch before it is pushed: Google's Antigravity CLI, `agy`, on a Gemini model, so the review doesn't share the author's blind spots. You then judge each finding and fix what holds up. Read the project's `docs/GIT.md` for the scratch folder (`.tmp/` in the workspace by default) and `TESTING.md` for the checks; each one that exists wins over the defaults here.
+A second model reviews the branch before it is pushed: Google's Antigravity CLI, `agy`, on a Gemini model, so the review doesn't share the author's blind spots. You then judge each finding and fix what holds up. Read the project's `docs/GIT.md` for the scratch folder and `TESTING.md` for the checks.
 
 ## Run
 
 The review covers the current state of the workspace the change is in, against its base: committed, uncommitted and untracked changes since it last matched the base, whether on a branch or on the default branch itself. The workspace is the delivery's worktree inside a delivery, as `docs/GIT.md` sets it, and otherwise the checkout the user is working in. The base is `origin/HEAD` (the default branch when there is no remote), or the one the user names.
 
-`agy` reviews the folder it starts in, so start it in that workspace. Note the workspace's `git status --porcelain` and `git diff HEAD | git hash-object --stdin` first, so you can tell afterwards whether the reviewer changed anything. Then, with the workspace's absolute path as `<workspace>`, this skill's folder as `<skill>` and the base as `<base>`:
+The reviewer judges the change against what was asked for, so write that to `<scratch>/agy-review/request.md` first: the card with its acceptance criteria inside a delivery, and otherwise the change as the user described it.
+
+`agy` reviews the folder it starts in, so start it in that workspace. It has no read-only mode, so note the workspace's `git status --porcelain` and `git diff HEAD | git hash-object --stdin` before it runs, to tell afterwards whether it changed anything. Then, with the workspace's absolute path as `<workspace>`, this skill's folder as `<skill>` and the base as `<base>`:
 
 ```sh
 cd <workspace>
 mkdir -p <scratch>/agy-review
-agy -p "Base: <base>. $(cat <skill>/references/brief.md)" \
+agy -p "Base: <base>. Request: <scratch>/agy-review/request.md. $(cat <skill>/references/brief.md)" \
   --model gemini-4-neon-high \
-  --mode auto \
   --output-format json \
   --json-schema <skill>/references/findings.schema.json \
   --print-timeout 20m > <scratch>/agy-review/review.json
 ```
 
-- Use the model the user or `TESTING.md` names in place of Gemini 4 Neon; `agy models` lists the slugs.
+- Gemini 4 Neon is the reviewer. Use another model only when the user names one; `agy models` lists the slugs.
 - A review takes minutes; run it in the background and wait for it to finish.
 - The result is one JSON object: `status` is `SUCCESS` and the review is in `structured_output`. Any other status, a missing `agy`, or empty output means no review happened: report the error `agy` gave and how to fix it, such as running `agy` once in a terminal to sign in, and stop there.
 
@@ -36,10 +37,11 @@ The findings come from a reviewer without your context: weigh each as advice, an
 
 - Fix what holds up, with a failing test first when it is a behaviour bug, and run the checks `TESTING.md` declares.
 - Leave what doesn't, with one line on why.
+- Settle each doubt the reviewer lists the same way: it is a finding once the code shows it, and dropped otherwise.
 - One round: the fixes are not sent back for another review.
 
 Inside a delivery, commit the fixes as `docs/GIT.md` says; otherwise leave them uncommitted for the user.
 
 ## Report
 
-Report the model that reviewed, the reviewer's summary, each finding with what you did about it (fixed, or left and why), and anything the review didn't cover.
+Report the model that reviewed, the reviewer's summary, each finding and doubt with what you did about it (fixed, or left and why), and anything the review didn't cover.

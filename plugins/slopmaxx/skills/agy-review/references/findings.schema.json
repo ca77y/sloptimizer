@@ -10,15 +10,45 @@
       "items": {
         "type": "object",
         "properties": {
-          "file": { "type": "string" },
-          "line": { "type": "integer" },
-          "blocking": { "type": "boolean" },
-          "issue": { "type": "string" },
-          "fix": { "type": "string" }
+          "file": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer"
+          },
+          "blocking": {
+            "type": "boolean"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "fix": {
+            "type": "string"
+          }
         },
         "required": ["file", "line", "blocking", "issue", "fix"]
       }
+    },
+    "doubts": {
+      "type": "array",
+      "description": "What the reviewer suspects but couldn't confirm.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "settle": {
+            "type": "string",
+            "description": "What would confirm or rule it out."
+          }
+        },
+        "required": ["file", "issue", "settle"]
+      }
     }
   },
-  "required": ["summary", "findings"]
+  "required": ["summary", "findings", "doubts"]
 }

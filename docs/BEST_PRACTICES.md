@@ -1,10 +1,10 @@
 # Best practices
 
-What the outside world says about writing Claude Code plugins, skills and subagents, gathered on 2026-11-22. [`DESIGN.md`](DESIGN.md) holds the principles this repo chose; this page holds the evidence they can be checked against, and [`AUDIT.md`](AUDIT.md) checks the `slopmaxx` plugin against it.
+What the outside world says about writing Claude Code plugins, skills and subagents, gathered on 2026-11-22. [`DESIGN.md`](DESIGN.md) holds the principles this repo chose; this page holds the evidence they can be checked against.
 
 ## How to read this page
 
-- Each rule has an id (`M3`, `D2`), so the audit can point at it. The tags in brackets name its sources, listed at the end.
+- Each rule has an id (`M3`, `D2`), so an audit can point at it. The tags in brackets name its sources, listed at the end.
 - The rules in section 1 come from Anthropic's prompting pages for the Claude 5 generation and carry the most weight: these are the models the plugin runs on. When a later section disagrees with section 1, section 1 wins.
 - After that, the order of trust is: Anthropic's documentation, then measurements published by people who ship skills, then stated practice, then opinion. A rule that rests on one source or one measurement says so.
 - Anthropic scopes its own advice: "Where a technique names a specific model, treat it as measured on that model and re-check it against your own evals before applying it to another" [BP]. Each rule in section 1 therefore names the models its source names.

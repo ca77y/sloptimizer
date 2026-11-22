@@ -3,7 +3,6 @@
 ```text
 docs/
 |-- ARCHITECTURE.md   # How the repo and its plugins are built
-|-- AUDIT.md          # How the slopmaxx plugin follows BEST_PRACTICES.md, rule by rule
 |-- BEST_PRACTICES.md # What Anthropic and the community say about plugins, skills and subagents
 |-- DESIGN.md         # Principles skills, agents and references are designed against
 |-- GIT.md            # Branches, worktrees, commits, PRs, workspace and scratch folder
