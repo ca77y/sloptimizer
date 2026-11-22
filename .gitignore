@@ -10,9 +10,6 @@ skills-lock.json
 # Obsidian local state
 .obsidian/
 
-# Plugin eval reports (make smoke)
-plugins/*/evals/results/
-
 # SWE-bench Pro comparison (make eval): task folders, dataset rows, runs and reports
 /.eval/
 

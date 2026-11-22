@@ -37,10 +37,12 @@ test: ## The unit tests: no model, no network
 
 # Calls models: run only on request. Each case checks that its skill starts and reaches its first milestones within
 # ten minutes, and all cases run at once, so the whole run takes about ten minutes. A headless session's wait for
-# background agents is lifted, so a skill's subagents can finish.
+# background agents is lifted, so a skill's subagents can finish. The terminal output is the result: the CLI's result
+# file and HTML report go to a temporary folder deleted on exit, and nothing is published.
 smoke: ## Smoke evals, about ten minutes; calls models
+	@out=$$(mktemp -d); trap 'rm -rf "$$out"' EXIT; \
 	for p in $(PLUGINS); do \
-	  CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0 claude plugin eval "$$p" --tag smoke -j 7 --allow-tools Bash Write Edit Agent Skill WebFetch WebSearch --scaffold --ablation none --trust-plugin || exit 1; \
+	  CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0 claude plugin eval "$$p" --tag smoke -j 7 --allow-tools Bash Write Edit Agent Skill WebFetch WebSearch --scaffold --ablation none --trust-plugin --no-publish --output-dir "$$out/results" --report "$$out/report.html" || exit 1; \
 	done
 
 # The SWE-bench Pro comparison of the more-slop skills with plain Claude Code (scripts/swepro/README.md). It calls

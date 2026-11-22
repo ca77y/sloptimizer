@@ -20,8 +20,8 @@ Tests live in `test/`. They call no model and no network service; they use fixtu
 There is no app. The plugins run through two evals, which call models through the Claude Code login of whoever runs
 them. They run only when the user asks, never in CI.
 
-- Smoke: `make smoke`, about ten minutes. Runs every case tagged `smoke` under `plugins/<plugin>/evals/`. Reports go
-  to `plugins/<plugin>/evals/results/`.
+- Smoke: `make smoke`, about ten minutes. Runs every case tagged `smoke` under `plugins/<plugin>/evals/`. Its
+  terminal output is the result; it keeps no report.
 - Full: `make install-eval` once, then `make eval`, hours, with Docker. Runs SWE-bench Pro tasks through the plugin
   and through plain Claude Code, as [`scripts/swepro/README.md`](scripts/swepro/README.md) says. `make eval-grader`
   checks its grader. Reports go to `.eval/runs/`.
