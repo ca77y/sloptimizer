@@ -1,8 +1,9 @@
 # SWE-bench Pro comparison
 
-Runs SWE-bench Pro v2 tasks through the slopmaxx skills and through plain Claude Code, both on Opus 5.5, grades
-both arms with each task's hidden tests, and reports, per task and arm, whether it resolved the task, its cost, wall
-time, agent count, and how the run ended.
+Runs SWE-bench Pro v2 tasks through the slopmaxx skills and through plain Claude Code, grades every arm with each
+task's hidden tests, and reports, per task, arm and run, whether it resolved the task, the tests it broke, its cost,
+wall time, agent count, the size of its patch, and how the run ended. A report is compared with the one released for
+the version before, so the main question it answers is whether the plugin got better or worse.
 
 It calls models through your own Claude Code login and runs the tasks in Docker, so it runs only when you ask: no CI
 job, `make check`, `make test` or `make smoke` runs it.
@@ -22,11 +23,16 @@ make install-eval                  # once: task folders, dataset rows, and image
 make eval-grader                   # optional: every reference patch resolves, every empty patch doesn't
 make eval TASKS=trivial ARMS=plain # a small first run to see the cost
 make eval                          # all 16 tasks, both arms
+make eval-release                  # keep the newest run as this version's report
 ```
 
 - `TASKS` limits a run to some tasks: a kind (`story`, `bugfix`, `trivial`), `shape` for the shape → story tasks, or
   any part of an instance id, separated by commas. A term that names no task stops the run.
-- `ARMS` is `slopmaxx`, `plain`, or both (the default).
+- `ARMS` is `slopmaxx`, `plain`, or both (the default). `slopmaxx@<git ref>` adds the plugin as a commit or tag has
+  it, for a version no release holds results for.
+- `MODEL` sets the model of every arm's main session (default `claude-opus-5-5`). A model the price list in `lib.ts`
+  doesn't know is costed by Claude Code's own figure.
+- `RUNS` runs each task and arm that many times (default 1).
 - `JOBS` sets how many arms run at once (default 4). Each arm keeps one task container running.
 - `RUN=.eval/runs/<stamp>` resumes a stopped run: finished arms are kept and the rest run again.
 - `KEEP=1` keeps each arm's repository after grading, for a look at what it did.
@@ -35,6 +41,20 @@ make eval                          # all 16 tasks, both arms
 
 A story delivery can take hours; a plain run of the same task takes minutes. Start with one task per kind, for example
 `make eval TASKS=96b997802e,a02e22e902,7cbfb812ef`.
+
+## Releases
+
+Runs are for tinkering: they stay under the ignored `.eval/`. When a version of the plugin is ready, `make
+eval-release` keeps its results in the repository, under `eval/results/<plugin>-<version>/`:
+
+- `results.json`: every run's full result, with each invocation's cost, agents, time and ending.
+- `report.md`: the totals, the comparison with the release before, and one row per run.
+
+It takes the newest run, or the runs `RUN=<run dir>,<run dir>` names, and `NOTE=<text>` adds a line to the report. A
+task and arm that several of those runs hold keeps every run. Every later report, of a run or of a release, compares
+itself with the newest release: the plugin's arm with the plugin's and plain with plain, on the tasks both hold.
+
+No version has a release yet, so the first report has nothing to compare with.
 
 ## What a run does
 
@@ -45,7 +65,7 @@ For each task and arm:
    under `.board/` and a local stub forge under `.forge/`, and commits them as the seed. A story's card is written to `.board/STORY-1.md`.
 2. Starts the task's container with the repository mounted in it. The code's toolchain lives only in the container,
    so `TESTING.md` tells both arms to run commands through `.swepro/run '<command>'`.
-3. Runs Claude Code headless in the repository on Opus 5.5, with `--setting-sources project,local` and no MCP
+3. Runs Claude Code headless in the repository on the run's model, with `--setting-sources project,local` and no MCP
    servers, so your own plugins, hooks, and settings stay out of both arms, and without WebFetch or WebSearch, so
    neither arm can look up the upstream fix. Its Bash tool runs in bash on every machine (`SHELL=/bin/bash`):
    - slopmaxx: a copy of `plugins/slopmaxx` in the temp folder, and
@@ -55,7 +75,8 @@ For each task and arm:
    - plain: the task text and a pointer to `TESTING.md`.
 4. Takes the arm's final code as a patch on the seed, leaving out the setup files.
 5. Grades the patch in a fresh container of the task's published image with the task's own verifier, which applies
-   the hidden tests and checks every fail-to-pass and pass-to-pass test.
+   the hidden tests and checks every fail-to-pass and pass-to-pass test. A pass-to-pass test that no longer passes is
+   reported as a regression.
 
 Each task's text is its problem statement, requirements, and interface. The shape → story tasks withhold the
 requirements from shape and from plain Claude Code, so shape and the delivery decide them.

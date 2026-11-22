@@ -10,3 +10,5 @@ library/
 .obsidian/
 # Story worktrees are other checkouts of this repository
 .worktrees/
+# Released eval reports are written by the harness
+eval/results/

@@ -24,14 +24,16 @@ them. They run only when the user asks, never in CI.
   another model, `RUNS=<n>` more than one run per case. Results and the HTML report go to `.eval/smoke/`.
 - Full: `make install-eval` once, then `make eval`, hours, with Docker. Runs SWE-bench Pro tasks through the plugin
   and through plain Claude Code, as [`eval/swepro/README.md`](eval/swepro/README.md) says. `make eval-grader`
-  checks its grader. Reports go to `.eval/runs/`.
+  checks its grader. Reports go to `.eval/runs/`, each compared with the newest release under `eval/results/`.
+  `make eval-release` keeps a run there as the report for the plugin's version.
 
 ## Validating a change
 
 - Scripts, tests and tooling: validate by `make check`; proof: its output and the names of the tests that prove it.
 - Skill, agent or reference text: validate by `make check`, then `make smoke` when the user asks; proof: each case's
   pass or fail and its report.
-- Cost, accuracy or quality across runs: validate by `make eval` when the user asks; proof: the run's `report.md`.
+- Cost, accuracy or quality across versions: validate by `make eval` when the user asks; proof: the run's
+  `report.md`, with its comparison against the release before.
 - Attaching proof: inline in the PR description.
 
 A criterion no kind covers, or one that couldn't be checked, is listed under **Not done** in the PR.

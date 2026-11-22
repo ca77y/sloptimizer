@@ -1,8 +1,11 @@
 // Runs the SWE-bench Pro comparison of the slopmaxx skills with plain Claude Code. Usage:
 //   node eval/swepro/main.ts install [--tasks <terms>]
-//   node eval/swepro/main.ts run [--tasks <terms>] [--arms slopmaxx,plain] [--jobs <n>] [--resume <run dir>] [--keep]
+//   node eval/swepro/main.ts run [--tasks <terms>] [--arms slopmaxx,plain,slopmaxx@<git ref>] [--model <model>]
+//     [--runs <n>] [--jobs <n>] [--resume <run dir>] [--keep]
 //   node eval/swepro/main.ts grader [--tasks <terms>] [--jobs <n>]
-// Everything it downloads or writes stays under .eval/, which git ignores. See eval/swepro/README.md.
+//   node eval/swepro/main.ts release [--from <run dir>,<run dir>] [--note <text>]
+// Everything it downloads or writes stays under .eval/, which git ignores, except a release, which goes to
+// eval/results/. See eval/swepro/README.md.
 //
 // It drives the docker, git, and claude of whoever runs it, so it finds them on their PATH.
 /* eslint-disable sonarjs/no-os-command-from-path */
@@ -27,12 +30,15 @@ import {
   BRANCH,
   childEnv,
   claudeArgs,
+  DEFAULT_MODEL,
   DIFF_EXCLUDES,
   endingOf,
   EXCLUDED,
   gradeArgs,
+  patchStats,
   phases,
   PLUGIN,
+  refOf,
   renderGraderReport,
   renderReport,
   runScript,
@@ -46,8 +52,11 @@ import {
   usageOf,
   type Arm,
   type ArmResult,
+  type Counts,
   type GraderVerdict,
   type PhaseResult,
+  type Release,
+  type ReportMeta,
   type Row,
   type Task,
   type TaskList,
@@ -58,6 +67,8 @@ const EVAL = path.join(ROOT, ".eval");
 const HARNESS = path.join(EVAL, "cache", "SWE-bench_Pro-os");
 const ROWS = path.join(EVAL, "cache", "rows");
 const PLUGIN_DIR = path.join(ROOT, "plugins", PLUGIN);
+/** The released reports, one folder per plugin version, kept in the repository. */
+const RESULTS = path.join(ROOT, "eval", "results");
 // Each arm's repository and the plugin it loads live outside any checkout, so no agent mistakes this repository's own
 // docs/BOARD.md or docs/GIT.md for the task's, much as an installed plugin lives in Claude Code's cache.
 const WORK = process.env["SWEPRO_WORK"] ?? path.join(os.tmpdir(), "swepro");
@@ -352,7 +363,7 @@ async function grade(
   id: string,
   patch: string,
   dir: string,
-): Promise<{ finished: boolean; resolved: boolean; passed: number; total: number }> {
+): Promise<{ finished: boolean; resolved: boolean; failToPass: Counts; passToPass: Counts }> {
   for (let attempt = 1; attempt <= 3; attempt++) {
     rmSync(dir, { recursive: true, force: true });
     mkdirSync(path.join(dir, "logs", "verifier"), { recursive: true });
@@ -388,15 +399,23 @@ async function grade(
           .map((t) => t.name)
       : [],
   );
-  const f2p = failToPass(id);
-  return { finished, resolved, passed: f2p.filter((t) => passedTests.has(t)).length, total: f2p.length };
+  const count = (tests: readonly string[]): Counts => ({
+    passed: tests.filter((t) => passedTests.has(t)).length,
+    total: tests.length,
+  });
+  return {
+    finished,
+    resolved,
+    failToPass: count(testList(id, "fail_to_pass")),
+    passToPass: count(testList(id, "pass_to_pass")),
+  };
 }
 
-/** The task's fail-to-pass test names from its verifier config, which stores them as JSON or a Python-literal list. */
-function failToPass(id: string): string[] {
-  const raw = (readJson(path.join(taskDir(id), "tests", "config.json")) as Json)["fail_to_pass"];
+/** One of the task's test lists from its verifier config, which stores them as JSON or a Python-literal list. */
+function testList(id: string, key: "fail_to_pass" | "pass_to_pass"): string[] {
+  const raw = (readJson(path.join(taskDir(id), "tests", "config.json")) as Json)[key];
   if (Array.isArray(raw)) return raw.map(String);
-  const text = String(raw);
+  const text = typeof raw === "string" ? raw : "[]";
   try {
     return (JSON.parse(text) as unknown[]).map(String);
   } catch {
@@ -423,7 +442,7 @@ async function runPhases(
   task: Task,
   row: Row,
   arm: Arm,
-  at: { dir: string; ws: string; name: string; result: ArmResult; plugin: string },
+  at: { dir: string; ws: string; name: string; result: ArmResult; plugin: string; model: string },
 ): Promise<void> {
   let storyId = "STORY-1";
   const count = phases(task, row, arm).length;
@@ -434,20 +453,25 @@ async function runPhases(
     const sessionId = randomUUID();
     const stem = path.join(at.dir, `${String(i + 1)}-${phase.name}`);
     log(`${at.name}: ${phase.name} started (session ${sessionId})`);
-    const run = await runLogged("claude", claudeArgs(arm, { prompt: phase.prompt, sessionId, pluginDir: at.plugin }), {
-      cwd: at.ws,
-      out: `${stem}.jsonl`,
-      err: `${stem}.stderr`,
-      hours: HOURS[phase.name] ?? 2,
-      env: childEnv(process.env),
-    });
+    const run = await runLogged(
+      "claude",
+      claudeArgs(arm, { prompt: phase.prompt, sessionId, pluginDir: at.plugin, model: at.model }),
+      {
+        cwd: at.ws,
+        out: `${stem}.jsonl`,
+        err: `${stem}.stderr`,
+        hours: HOURS[phase.name] ?? 2,
+        env: childEnv(process.env),
+      },
+    );
     const final = readLines(`${stem}.jsonl`).findLast((e) => isRecord(e) && e["type"] === "result");
     const usage = usageOf(sessionFiles(sessionId));
     const ending = endingOf({ timedOut: run.timedOut, exitCode: run.exitCode, result: final });
     const reported = isRecord(final) && typeof final["total_cost_usd"] === "number" ? final["total_cost_usd"] : null;
     const phaseResult: PhaseResult = {
       name: phase.name,
-      cost: usage.cost,
+      // A model the price list doesn't know is costed by Claude Code's own figure for the session.
+      cost: Number.isNaN(usage.cost) ? (reported ?? 0) : usage.cost,
       agents: usage.agents,
       wallSeconds: run.seconds,
       ending,
@@ -455,7 +479,7 @@ async function runPhases(
     };
     at.result.phases.push(phaseResult);
     log(
-      `${at.name}: ${phase.name} ${ending} after ${(run.seconds / 60).toFixed(1)} min, $${usage.cost.toFixed(2)}, ${String(usage.agents)} agents`,
+      `${at.name}: ${phase.name} ${ending} after ${(run.seconds / 60).toFixed(1)} min, $${phaseResult.cost.toFixed(2)}, ${String(usage.agents)} agents`,
     );
     if (phase.name !== "shape") continue;
     const filed = newestStory(at.ws, before);
@@ -470,13 +494,26 @@ async function runPhases(
 interface RunContext {
   runDir: string;
   work: string;
-  plugin: string;
+  /** Where each plugin arm's copy of the plugin is. */
+  plugins: Record<Arm, string>;
+  model: string;
   keep: boolean;
 }
 
+/** One task and arm, run once: the unit a run schedules. */
+interface Job {
+  task: Task;
+  arm: Arm;
+  run: number;
+}
+
+/** An arm and run as a folder name: `slopmaxx`, `slopmaxx@v0.3.0` as `slopmaxx-v0.3.0`, and a later run as `plain.2`. */
+const armDir = (arm: Arm, run: number): string => arm.replaceAll(/[^\w.-]/g, "-") + (run > 1 ? `.${String(run)}` : "");
+
 function recordGrade(result: ArmResult, g: Awaited<ReturnType<typeof grade>>): void {
   result.resolved = g.finished ? g.resolved : null;
-  result.failToPass = g.finished ? { passed: g.passed, total: g.total } : null;
+  result.failToPass = g.finished ? g.failToPass : null;
+  result.passToPass = g.finished ? g.passToPass : null;
   if (g.finished) delete result.error;
   else result.error = "the grader left no verdict after 3 attempts";
 }
@@ -491,26 +528,33 @@ async function regradeIfUnfinished(task: Task, dir: string, result: ArmResult): 
   return result;
 }
 
-async function runArm(task: Task, arm: Arm, ctx: RunContext): Promise<ArmResult> {
+async function runArm({ task, arm, run }: Job, ctx: RunContext): Promise<ArmResult> {
   const { runDir, keep } = ctx;
-  const dir = path.join(runDir, taskKey(task.id), arm);
+  const dir = path.join(runDir, taskKey(task.id), armDir(arm, run));
   const resultFile = path.join(dir, "result.json");
   if (existsSync(resultFile)) return regradeIfUnfinished(task, dir, readJson(resultFile) as ArmResult);
   mkdirSync(dir, { recursive: true });
   const row = readJson(rowFile(task.id)) as Row;
-  const ws = path.join(ctx.work, taskKey(task.id), arm);
+  const ws = path.join(ctx.work, taskKey(task.id), armDir(arm, run));
   mkdirSync(path.dirname(ws), { recursive: true });
-  const container = `swepro-${path.basename(runDir)}-${taskKey(task.id)}-${arm}`.replaceAll(/[^\w.-]/g, "-");
+  const container = `swepro-${path.basename(runDir)}-${taskKey(task.id)}-${armDir(arm, run)}`.replaceAll(
+    /[^\w.-]/g,
+    "-",
+  );
   const result: ArmResult = {
     task: task.id,
     kind: task.kind,
     shape: task.shape,
     arm,
+    run,
+    model: ctx.model,
     resolved: null,
     failToPass: null,
+    passToPass: null,
+    patch: null,
     phases: [],
   };
-  const name = `${taskKey(task.id)} ${arm}`;
+  const name = `${taskKey(task.id)} ${arm}${run > 1 ? ` run ${String(run)}` : ""}`;
   try {
     log(`${name}: setting up the repository`);
     const inside = repoPathOf(row.docker_image);
@@ -534,14 +578,17 @@ async function runArm(task: Task, arm: Arm, ctx: RunContext): Promise<ArmResult>
       "infinity",
     ]);
     sh("docker", ["exec", container, "git", "config", "--global", "--add", "safe.directory", "*"]);
-    await runPhases(task, row, arm, { dir, ws, name, result, plugin: ctx.plugin });
+    await runPhases(task, row, arm, { dir, ws, name, result, plugin: ctx.plugins[arm] ?? "", model: ctx.model });
     const patch = capturePatch(ws, dir, seed);
     writeFileSync(path.join(dir, "patch.diff"), patch);
+    result.patch = patchStats(patch);
     removeContainer(container);
     log(`${name}: grading a ${String(patch.split("\n").length)}-line patch`);
     const g = await grade(task.id, patch, path.join(dir, "grade"));
     recordGrade(result, g);
-    log(`${name}: ${g.resolved ? "RESOLVED" : "unresolved"} (${String(g.passed)}/${String(g.total)} fail-to-pass)`);
+    log(
+      `${name}: ${g.resolved ? "RESOLVED" : "unresolved"} (${String(g.failToPass.passed)}/${String(g.failToPass.total)} fail-to-pass)`,
+    );
   } catch (error) {
     result.error = error instanceof Error ? error.message : String(error);
     log(`${name}: failed: ${result.error}`);
@@ -557,6 +604,10 @@ const stamp = (): string => new Date().toISOString().replaceAll(/[:.]/g, "-").sl
 
 async function main(): Promise<void> {
   const command = process.argv[2];
+  if (command === "release") {
+    release();
+    return;
+  }
   const tasks = selectTasks(LIST.tasks, list(option("--tasks") ?? process.env["TASKS"]));
   const jobs = Number(option("--jobs") ?? process.env["JOBS"] ?? 4);
   // A stopped run removes its containers and the repositories it copied; a resumed run copies them afresh.
@@ -593,34 +644,116 @@ async function main(): Promise<void> {
     if (verdicts.some((v) => v.resolved !== (v.patch === "reference"))) process.exitCode = 1;
     return;
   }
-  if (command !== "run") throw new Error("usage: main.ts install | run | grader");
+  if (command !== "run") throw new Error("usage: main.ts install | run | grader | release");
   const arms = selectArms(list(option("--arms") ?? process.env["ARMS"]));
+  const model = option("--model") ?? process.env["MODEL"] ?? DEFAULT_MODEL;
+  const runs = Number(option("--runs") ?? process.env["RUNS"] ?? 1);
   const resume = option("--resume") ?? process.env["RUN"];
   const runDir = resume ? path.resolve(resume) : path.join(EVAL, "runs", stamp());
   mkdirSync(runDir, { recursive: true });
   const started = new Date().toISOString();
-  const plugin = (readJson(path.join(PLUGIN_DIR, ".claude-plugin", "plugin.json")) as Json)["version"];
   log(
-    `running ${String(tasks.length)} tasks × ${arms.join(" and ")} with ${String(jobs)} at once into ${path.relative(ROOT, runDir)}/`,
+    `running ${String(tasks.length)} tasks × ${arms.join(" and ")} × ${String(runs)} on ${model} with ${String(jobs)} at once into ${path.relative(ROOT, runDir)}/`,
   );
   const keep = process.argv.includes("--keep") || Boolean(process.env["KEEP"]);
   const work = path.join(WORK, path.basename(runDir));
-  if (!keep) stopped.work = work;
-  const pluginCopy = path.join(work, "plugins", PLUGIN);
-  rmSync(pluginCopy, { recursive: true, force: true });
-  cpSync(PLUGIN_DIR, pluginCopy, { recursive: true });
   if (keep) log(`kept repositories go under ${work}/`);
-  const ctx: RunContext = { runDir, work, plugin: pluginCopy, keep };
-  const results = await pool(
-    tasks.flatMap((t) => arms.map((a) => ({ t, a }))),
-    jobs,
-    ({ t, a }) => runArm(t, a, ctx),
+  else stopped.work = work;
+  const ctx: RunContext = { runDir, work, plugins: copyPlugins(arms, work), model, keep };
+  const all = tasks.flatMap((task) =>
+    arms.flatMap((arm) => Array.from({ length: runs }, (_, i): Job => ({ task, arm, run: i + 1 }))),
   );
+  const results = await pool(all, jobs, (job) => runArm(job, ctx));
   if (!keep) rmSync(work, { recursive: true, force: true });
-  const report = renderReport(results, { started, plugin: `${PLUGIN} ${String(plugin)}` });
+  const meta: ReportMeta = { started, plugin: `${PLUGIN} ${pluginVersion()}` };
+  const before = releases().at(-1);
+  if (before) meta.against = before;
+  const report = renderReport(results, meta);
   writeFileSync(path.join(runDir, "report.md"), report);
   writeFileSync(path.join(runDir, "results.json"), JSON.stringify(results, null, 2));
   console.log(`\n${report}\nReport: ${path.relative(ROOT, path.join(runDir, "report.md"))}`);
+}
+
+const pluginVersion = (): string =>
+  String((readJson(path.join(PLUGIN_DIR, ".claude-plugin", "plugin.json")) as Json)["version"]);
+
+/**
+ * Copies the plugin each plugin arm loads into the run's work folder: the working tree's for `slopmaxx`, and the
+ * plugin as a git ref has it for `slopmaxx@<ref>`.
+ */
+function copyPlugins(arms: readonly Arm[], work: string): Record<Arm, string> {
+  const plugins: Record<Arm, string> = {};
+  for (const arm of arms) {
+    if (arm === "plain") continue;
+    const ref = refOf(arm);
+    const root = path.join(work, "plugins", armDir(arm, 1));
+    rmSync(root, { recursive: true, force: true });
+    mkdirSync(root, { recursive: true });
+    if (ref === undefined) {
+      cpSync(PLUGIN_DIR, path.join(root, PLUGIN), { recursive: true });
+    } else {
+      const archive = spawnSync("git", ["archive", ref, `plugins/${PLUGIN}`], { cwd: ROOT, maxBuffer: 1 << 30 });
+      if (archive.status !== 0) throw new Error(`${ref} has no plugins/${PLUGIN} to run as ${arm}`);
+      sh("tar", ["-x", "--strip-components", "1", "-C", root], { input: archive.stdout });
+    }
+    plugins[arm] = path.join(root, PLUGIN);
+  }
+  return plugins;
+}
+
+/** Every release under eval/results/, oldest first. */
+function releases(): Release[] {
+  return existsSync(RESULTS)
+    ? readdirSync(RESULTS)
+        .map((d) => path.join(RESULTS, d, "results.json"))
+        .filter((f) => existsSync(f))
+        .map((f) => readJson(f) as Release)
+        .toSorted((a, b) => a.released.localeCompare(b.released))
+    : [];
+}
+
+/** The finished runs under .eval/runs/, oldest first, without the grader checks. */
+const runDirs = (): string[] =>
+  existsSync(path.join(EVAL, "runs"))
+    ? readdirSync(path.join(EVAL, "runs"))
+        .filter((d) => !d.endsWith("-grader") && existsSync(path.join(EVAL, "runs", d, "results.json")))
+        .toSorted((a, b) => a.localeCompare(b))
+        .map((d) => path.join(EVAL, "runs", d))
+    : [];
+
+/**
+ * Releases the report for the plugin's version: the results of the runs named, or of the newest run, with every
+ * figure, and a report that compares them with the release before. A task and arm that several of the runs hold
+ * keeps every run, numbered in the order given.
+ */
+function release(): void {
+  const from = list(option("--from") ?? process.env["RUN"]).map((d) => path.resolve(d));
+  const dirs = from.length > 0 ? from : runDirs().slice(-1);
+  if (dirs.length === 0) throw new Error("no finished run to release. Run `make eval` first, or name runs with RUN=.");
+  const seen = new Map<string, number>();
+  const results = dirs.flatMap((d) =>
+    (readJson(path.join(d, "results.json")) as ArmResult[]).map((r): ArmResult => {
+      const run = (seen.get(`${r.task} ${r.arm}`) ?? 0) + 1;
+      seen.set(`${r.task} ${r.arm}`, run);
+      return { ...r, run };
+    }),
+  );
+  const version = pluginVersion();
+  const before = releases().findLast((r) => !(r.plugin === PLUGIN && r.version === version));
+  const note = option("--note") ?? process.env["NOTE"];
+  const released: Release = { plugin: PLUGIN, version, released: new Date().toISOString(), results };
+  if (note) released.note = note;
+  const dir = path.join(RESULTS, `${PLUGIN}-${version}`);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(path.join(dir, "results.json"), `${JSON.stringify(released, null, 2)}\n`);
+  const meta: ReportMeta = { started: released.released, plugin: `${PLUGIN} ${version}` };
+  if (note) meta.note = note;
+  if (before) meta.against = before;
+  const report = renderReport(results, meta);
+  writeFileSync(path.join(dir, "report.md"), report);
+  console.log(
+    `\n${report}\nReleased: ${path.relative(ROOT, dir)}/ from ${dirs.map((d) => path.basename(d)).join(", ")}`,
+  );
 }
 
 try {

@@ -10,6 +10,7 @@ import {
   endingOf,
   gradeArgs,
   ONE_RUN,
+  patchStats,
   phases,
   renderGraderReport,
   renderReport,
@@ -23,6 +24,7 @@ import {
   usageOf,
   workItem,
   type ArmResult,
+  type Release,
   type Row,
   type TaskList,
 } from "../eval/swepro/lib.ts";
@@ -97,6 +99,10 @@ describe("selecting part of the task list", () => {
     assert.deepEqual(selectArms(["plain"]), ["plain"]);
     assert.throws(() => selectArms(["baseline"]), /unknown arm/);
   });
+
+  test("an arm can be the plugin as a git ref has it", () => {
+    assert.deepEqual(selectArms(["slopmaxx@v0.3.0", "slopmaxx"]), ["slopmaxx", "slopmaxx@v0.3.0"]);
+  });
 });
 
 describe("what each arm is given", () => {
@@ -150,8 +156,12 @@ describe("what each arm is given", () => {
   });
 
   test("the plain arm has no plugin and the plugin arm only slopmaxx, both without the user's settings", () => {
-    const plain = claudeArgs("plain", { prompt: "p", sessionId: "s", pluginDir: "/x/plugins/slopmaxx" });
-    const plugin = claudeArgs("slopmaxx", { prompt: "p", sessionId: "s", pluginDir: "/x/plugins/slopmaxx" });
+    const opts = { prompt: "p", sessionId: "s", pluginDir: "/x/plugins/slopmaxx", model: "claude-opus-5-5" };
+    const plain = claudeArgs("plain", opts);
+    const plugin = claudeArgs("slopmaxx", opts);
+    const sonnet = claudeArgs("slopmaxx@v0.3.0", { ...opts, model: "claude-sonnet-5-5" });
+    assert.equal(sonnet[sonnet.indexOf("--model") + 1], "claude-sonnet-5-5");
+    assert.ok(sonnet.includes("--plugin-dir"));
     assert.ok(!plain.includes("--plugin-dir"));
     assert.deepEqual(plugin.slice(plugin.indexOf("--plugin-dir"), plugin.indexOf("--plugin-dir") + 2), [
       "--plugin-dir",
@@ -289,6 +299,8 @@ const result = (over: Partial<ArmResult>): ArmResult => ({
   arm: "slopmaxx",
   resolved: true,
   failToPass: { passed: 23, total: 23 },
+  passToPass: { passed: 40, total: 42 },
+  patch: { files: 5, testFiles: 2, added: 120, removed: 30 },
   phases: [
     { name: "shape", cost: 4, agents: 1, wallSeconds: 600, ending: "success", reportedCost: 4 },
     { name: "deliver", cost: 96, agents: 3, wallSeconds: 9000, ending: "success", reportedCost: 95 },
@@ -297,38 +309,88 @@ const result = (over: Partial<ArmResult>): ArmResult => ({
 });
 
 describe("the report", () => {
-  const report = renderReport(
-    [
-      result({}),
-      result({
-        arm: "plain",
-        resolved: false,
-        failToPass: { passed: 3, total: 23 },
-        phases: [{ name: "plain", cost: 5, agents: 1, wallSeconds: 1200, ending: "success", reportedCost: 5 }],
-      }),
-    ],
-    { started: "2026-11-21T00:00:00Z", plugin: "slopmaxx 0.1.0" },
-  );
+  const plain = result({
+    arm: "plain",
+    resolved: false,
+    failToPass: { passed: 3, total: 23 },
+    passToPass: null,
+    patch: null,
+    phases: [{ name: "plain", cost: 5, agents: 1, wallSeconds: 1200, ending: "success", reportedCost: 5 }],
+  });
+  const report = renderReport([result({}), plain], { started: "2026-11-21T00:00:00Z", plugin: "slopmaxx 0.1.0" });
 
-  test("lists each task and arm with its verdict, cost, wall time, agent count, and how it ended", () => {
-    assert.match(
-      report,
-      /\| flipt-e50808c \| shape → story \| slopmaxx \| resolved \| 23\/23 \| \$100\.00 \| 160\.0 min \| 4 \| success → success \|/,
+  test("lists each run with its verdict, regressions, cost, wall time, agent count, patch and how it ended", () => {
+    assert.ok(
+      report.includes(
+        "| flipt-e50808c | shape → story | slopmaxx | 1 | resolved | 23/23 | 2 | $100.00 | 160.0 min | 4 | +120 −30 in 5 files, 2 of them tests | success → success |",
+      ),
     );
-    assert.match(
-      report,
-      /\| flipt-e50808c \| shape → story \| plain \| unresolved \| 3\/23 \| \$5\.00 \| 20\.0 min \| 1 \| success \|/,
+    assert.ok(
+      report.includes(
+        "| flipt-e50808c | shape → story | plain | 1 | unresolved | 3/23 | – | $5.00 | 20.0 min | 1 | – | success |",
+      ),
     );
   });
 
   test("records shape and deliver apart as well as in total", () => {
-    assert.match(report, /\| flipt-e50808c \| slopmaxx \| shape \| \$4\.00 \| 10\.0 min \| 1 \|/);
-    assert.match(report, /\| flipt-e50808c \| slopmaxx \| deliver \| \$96\.00 \| 150\.0 min \| 3 \|/);
+    assert.ok(report.includes("| flipt-e50808c | slopmaxx | 1 | shape | $4.00 | 10.0 min | 1 |"));
+    assert.ok(report.includes("| flipt-e50808c | slopmaxx | 1 | deliver | $96.00 | 150.0 min | 3 |"));
   });
 
   test("states that each figure comes from one run, and names the arms slopmaxx and plain", () => {
     assert.ok(report.includes(ONE_RUN));
     assert.ok(!/baseline/i.test(report));
+  });
+
+  test("with several runs of a task and arm, counts how many resolved and stops calling it one run", () => {
+    const twice = renderReport([result({}), result({ run: 2, resolved: false })], { started: "s", plugin: "p" });
+    assert.ok(!twice.includes(ONE_RUN));
+    assert.ok(twice.includes("| shape → story | slopmaxx | 1/2 | $200.00 | 320.0 min |"));
+  });
+
+  test("names the model each arm ran on", () => {
+    assert.match(report, /runs Claude Code on claude-opus-5-5 at its default effort/);
+    const sonnet = renderReport([result({ model: "claude-sonnet-5-5" })], { started: "s", plugin: "p" });
+    assert.match(sonnet, /runs Claude Code on claude-sonnet-5-5 at/);
+  });
+
+  test("compares with the release before, the plugin with the plugin under any name and plain with plain", () => {
+    const before: Release = {
+      plugin: "slopify",
+      version: "0.6.24",
+      released: "2026-11-21T00:00:00Z",
+      results: [
+        result({ arm: "slopify", resolved: false, run: 1 }),
+        result({ arm: "slopify", resolved: true, run: 2 }),
+        { ...plain, resolved: true },
+      ],
+    };
+    const compared = renderReport([result({}), plain], { started: "s", plugin: "p", against: before });
+    assert.ok(compared.includes("## Against slopify 0.6.24"));
+    assert.ok(compared.includes("| flipt-e50808c | plugin | 1/2 → 1/1 | $100.00 → $100.00 | 160.0 min → 160.0 min |"));
+    assert.ok(compared.includes("| flipt-e50808c | plain | 1/1 → 0/1 | $5.00 → $5.00 | 20.0 min → 20.0 min |"));
+    assert.ok(!report.includes("## Against"));
+  });
+
+  test("a patch is measured by the files it touches, the tests among them, and its lines", () => {
+    const patch = [
+      "diff --git a/src/calc.py b/src/calc.py",
+      "--- a/src/calc.py",
+      "+++ b/src/calc.py",
+      "@@ -1,2 +1,3 @@",
+      "-old",
+      "+new",
+      "+more",
+      "diff --git a/tests/test_calc.py b/tests/test_calc.py",
+      "--- a/tests/test_calc.py",
+      "+++ b/tests/test_calc.py",
+      "+assert",
+      "diff --git a/pkg/thing_test.go b/pkg/thing_test.go",
+      "+++ b/pkg/thing_test.go",
+      "+func TestThing",
+    ].join("\n");
+    assert.deepEqual(patchStats(patch), { files: 3, testFiles: 2, added: 4, removed: 1 });
+    assert.deepEqual(patchStats(""), { files: 0, testFiles: 0, added: 0, removed: 0 });
   });
 
   test("the grader check lists each task's verdict for both patches", () => {

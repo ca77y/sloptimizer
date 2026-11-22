@@ -3,9 +3,18 @@
 
 /** How a task goes through the plugin: a story card, a bug report, or a change small enough to hand over as text. */
 type Kind = "story" | "bugfix" | "trivial";
-export type Arm = "slopmaxx" | "plain";
-const ARMS: readonly Arm[] = ["slopmaxx", "plain"];
 export const PLUGIN = "slopmaxx";
+/**
+ * An arm of the comparison: `plain` Claude Code, `slopmaxx` as the working tree has it, or `slopmaxx@<git ref>`, the
+ * plugin as that commit or tag has it.
+ */
+// eslint-disable-next-line sonarjs/redundant-type-aliases -- the name says which strings are meant
+export type Arm = string;
+const ARMS: readonly Arm[] = [PLUGIN, "plain"];
+/** The git ref a `slopmaxx@<ref>` arm takes the plugin from, or undefined for the other arms. */
+export const refOf = (arm: Arm): string | undefined => new RegExp(`^${PLUGIN}@(.+)$`).exec(arm)?.[1];
+/** Whether an arm runs the plugin, at any version. Results are compared across reports by this, not by arm name. */
+const role = (arm: Arm): "plugin" | "plain" => (arm === "plain" ? "plain" : "plugin");
 
 export interface Task {
   id: string;
@@ -32,8 +41,8 @@ export interface Row {
   docker_image: string;
 }
 
-/** The model of both arms' main session; the plugin's agents use the models their definitions name. */
-const MODEL = "claude-opus-5-5";
+/** The model of both arms' main session unless a run names another; the plugin's agents use the models they name. */
+export const DEFAULT_MODEL = "claude-opus-5-5";
 /** Every lookup tool is off in both arms, so neither can find the upstream fix. */
 const DISALLOWED_TOOLS = ["WebFetch", "WebSearch"];
 /** The files the harness adds to the task repository; they never reach a graded patch. */
@@ -43,6 +52,7 @@ export const EXCLUDED = [".swepro/", ".board/", ".forge/", ".tmp/", ".worktrees/
 export const BRANCH = "swepro";
 export const ONE_RUN =
   "Each figure comes from one run of each task and arm, so the results are directional, not proof.";
+const SEVERAL_RUNS = "A task and arm with several runs has one row per run below, and its mean in the comparison.";
 /** The stub forge has no reviewer, so no review round after the PR opens is run or costed. */
 const NO_REVIEW =
   "The local forge runs no review after the PR opens, so review rounds a real forge would trigger are neither run nor costed.";
@@ -70,9 +80,11 @@ export function selectTasks(tasks: readonly Task[], terms: readonly string[]): T
 export function selectArms(terms: readonly string[]): Arm[] {
   const words = terms.map((t) => t.trim()).filter(Boolean);
   if (words.length === 0) return [...ARMS];
-  const unknown = words.filter((w) => !ARMS.includes(w as Arm));
-  if (unknown.length > 0) throw new Error(`unknown arm: ${unknown.join(", ")}; the arms are ${ARMS.join(", ")}`);
-  return ARMS.filter((a) => words.includes(a));
+  const unknown = words.filter((w) => !ARMS.includes(w) && refOf(w) === undefined);
+  if (unknown.length > 0) {
+    throw new Error(`unknown arm: ${unknown.join(", ")}; the arms are ${ARMS.join(", ")} and ${PLUGIN}@<git ref>`);
+  }
+  return [...ARMS.filter((a) => words.includes(a)), ...words.filter((w) => refOf(w) !== undefined)];
 }
 
 const section = (heading: string, body: string): string => `## ${heading}\n\n${body.trim()}`;
@@ -147,7 +159,10 @@ export function childEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
 }
 
 /** The command line flags of one invocation; the plugin arm adds the plugin, and nothing else differs. */
-export function claudeArgs(arm: Arm, opts: { prompt: string; sessionId: string; pluginDir: string }): string[] {
+export function claudeArgs(
+  arm: Arm,
+  opts: { prompt: string; sessionId: string; pluginDir: string; model: string },
+): string[] {
   return [
     "-p",
     opts.prompt,
@@ -164,7 +179,7 @@ export function claudeArgs(arm: Arm, opts: { prompt: string; sessionId: string; 
     "--disallowedTools",
     DISALLOWED_TOOLS.join(","),
     "--model",
-    MODEL,
+    opts.model,
     ...(arm === "plain" ? [] : ["--plugin-dir", opts.pluginDir]),
   ];
 }
@@ -506,16 +521,64 @@ export interface PhaseResult {
   reportedCost: number | null;
 }
 
+export interface Counts {
+  passed: number;
+  total: number;
+}
+
+/** The size of an arm's patch: how many files it touches, how many of them are tests, and the lines it adds and removes. */
+export interface PatchStats {
+  files: number;
+  testFiles: number;
+  added: number;
+  removed: number;
+}
+
 export interface ArmResult {
   task: string;
   kind: Kind;
   shape: boolean;
   arm: Arm;
+  /** Which run of this task and arm this is, from 1. Results from before repeated runs have none. */
+  run?: number;
+  /** The model of the arm's main session. Results from before the model was a choice ran on the default. */
+  model?: string;
   /** True or false once graded; null when the arm never produced code to grade. */
   resolved: boolean | null;
-  failToPass: { passed: number; total: number } | null;
+  failToPass: Counts | null;
+  /** The tests that passed before the change and must still pass: one that no longer does is a regression. */
+  passToPass?: Counts | null;
+  patch?: PatchStats | null;
   phases: PhaseResult[];
   error?: string;
+}
+
+/** The results released for one version of a plugin: every run that counts for it, kept in the repository. */
+export interface Release {
+  plugin: string;
+  version: string;
+  released: string;
+  note?: string;
+  results: ArmResult[];
+}
+
+/** A file under a tests folder, or named as a test: `test_x.py`, `x_test.go`, `x.test.ts`, `x.spec.ts`. */
+const TEST_FOLDER = /(?:^|\/)(?:tests?|__tests__|spec|testdata)\//i;
+const TEST_NAME = /(?:^|\/)test_[^/]*$|[._-](?:test|spec)\.[^/]*$/i;
+
+/** What a patch touches, read from its text. */
+export function patchStats(patch: string): PatchStats {
+  const files = patch
+    .matchAll(/^diff --git a\/.* b\/(.*)$/gm)
+    .map((m) => m[1] ?? "")
+    .toArray();
+  const lines = patch.split("\n");
+  return {
+    files: files.length,
+    testFiles: files.filter((f) => TEST_FOLDER.test(f) || TEST_NAME.test(f)).length,
+    added: lines.filter((l) => l.startsWith("+") && !l.startsWith("+++")).length,
+    removed: lines.filter((l) => l.startsWith("-") && !l.startsWith("---")).length,
+  };
 }
 
 const totalOf = (r: ArmResult, key: "cost" | "agents" | "wallSeconds"): number =>
@@ -526,49 +589,127 @@ const minutes = (s: number): string => `${(s / 60).toFixed(1)} min`;
 const verdict = (r: ArmResult): string => (r.resolved === null ? "not graded" : r.resolved ? "resolved" : "unresolved");
 const cell = (s: string): string => s.replaceAll("|", String.raw`\|`).replaceAll("\n", " ");
 const kindOf = (r: ArmResult): string => (r.shape ? "shape → story" : r.kind);
+const counts = (c: Counts | null | undefined): string => (c ? `${c.passed}/${c.total}` : "–");
+const regressions = (r: ArmResult): string => (r.passToPass ? String(r.passToPass.total - r.passToPass.passed) : "–");
+const patchOf = (r: ArmResult): string =>
+  r.patch ? `+${r.patch.added} −${r.patch.removed} in ${r.patch.files} files, ${r.patch.testFiles} of them tests` : "–";
+const table = (head: readonly string[], rows: readonly string[]): string =>
+  `| ${head.join(" | ")} |\n| ${head.map(() => "--").join(" | ")} |\n${rows.join("\n")}`;
 
-/** The run's report: one row per task and arm, the shape → story phases apart and summed, and totals per kind. */
-export function renderReport(results: readonly ArmResult[], meta: { started: string; plugin: string }): string {
+/** One task and arm's runs as one line: how many resolved, and the mean cost and time of a run. */
+function summary(rs: readonly ArmResult[]): { resolved: string; cost: number; seconds: number } {
+  const mean = (key: "cost" | "wallSeconds"): number => rs.reduce((s, r) => s + totalOf(r, key), 0) / rs.length;
+  return {
+    resolved: `${rs.filter((r) => r.resolved === true).length}/${rs.length}`,
+    cost: mean("cost"),
+    seconds: mean("wallSeconds"),
+  };
+}
+
+function groupBy(results: readonly ArmResult[], key: (r: ArmResult) => string): Map<string, ArmResult[]> {
+  const groups = new Map<string, ArmResult[]>();
+  for (const r of results) groups.set(key(r), [...(groups.get(key(r)) ?? []), r]);
+  return groups;
+}
+
+/**
+ * How these results compare with a release's: one row per task and arm that both hold, the plugin's arm matched with
+ * the plugin's and plain with plain, whatever the plugin was called then.
+ */
+function against(results: readonly ArmResult[], then: Release): string[] {
+  const key = (r: ArmResult): string => `${taskKey(r.task)} | ${role(r.arm)}`;
+  const before = groupBy(
+    then.results.filter((r) => refOf(r.arm) === undefined),
+    key,
+  );
+  const now = groupBy(
+    results.filter((r) => refOf(r.arm) === undefined),
+    key,
+  );
+  const rows = [...now]
+    .filter(([k]) => before.has(k))
+    .map(([k, rs]) => {
+      const a = summary(before.get(k) ?? []);
+      const b = summary(rs);
+      return `| ${k} | ${a.resolved} → ${b.resolved} | ${money(a.cost)} → ${money(b.cost)} | ${minutes(a.seconds)} → ${minutes(b.seconds)} |`;
+    });
+  const label = `${then.plugin} ${then.version}`;
+  return [
+    `## Against ${label}`,
+    rows.length > 0
+      ? `Each cell reads ${label} → this report: the runs resolved, then the mean cost and wall time of a run.`
+      : `${label} holds no result for a task and arm in this report.`,
+    ...(rows.length > 0 ? [table(["Task", "Arm", "Resolved", "Cost", "Wall time"], rows)] : []),
+  ];
+}
+
+/** What a report says about itself: when it started, the plugin's name and version, and the release it is compared with. */
+export interface ReportMeta {
+  started: string;
+  plugin: string;
+  note?: string;
+  against?: Release;
+}
+
+/**
+ * The report: totals per kind and arm, the comparison with the release before, then one row per run, with the shape →
+ * story phases apart.
+ */
+export function renderReport(results: readonly ArmResult[], meta: ReportMeta): string {
+  const several = groupBy(results, (r) => `${r.task} ${r.arm}`)
+    .values()
+    .some((rs) => rs.length > 1);
+  const models = [...new Set(results.map((r) => r.model ?? DEFAULT_MODEL))].join(" and ");
   const rows = results.map((r) => {
     const ending = r.error ? `error: ${r.error}` : r.phases.map((p) => p.ending).join(" → ");
-    const f2p = r.failToPass ? `${r.failToPass.passed}/${r.failToPass.total}` : "–";
-    return `| ${taskKey(r.task)} | ${kindOf(r)} | ${r.arm} | ${verdict(r)} | ${f2p} | ${money(totalOf(r, "cost"))} | ${minutes(totalOf(r, "wallSeconds"))} | ${totalOf(r, "agents")} | ${cell(ending)} |`;
+    return `| ${taskKey(r.task)} | ${kindOf(r)} | ${r.arm} | ${r.run ?? 1} | ${verdict(r)} | ${counts(r.failToPass)} | ${regressions(r)} | ${money(totalOf(r, "cost"))} | ${minutes(totalOf(r, "wallSeconds"))} | ${totalOf(r, "agents")} | ${patchOf(r)} | ${cell(ending)} |`;
   });
   const split = results
     .filter((r) => r.phases.length > 1)
     .flatMap((r) =>
       r.phases.map(
         (p) =>
-          `| ${taskKey(r.task)} | ${r.arm} | ${p.name} | ${money(p.cost)} | ${minutes(p.wallSeconds)} | ${p.agents} | ${cell(p.ending)} |`,
+          `| ${taskKey(r.task)} | ${r.arm} | ${r.run ?? 1} | ${p.name} | ${money(p.cost)} | ${minutes(p.wallSeconds)} | ${p.agents} | ${cell(p.ending)} |`,
       ),
     );
-  const groups = new Map<string, ArmResult[]>();
-  for (const r of results) {
-    const k = `${kindOf(r)} | ${r.arm}`;
-    groups.set(k, [...(groups.get(k) ?? []), r]);
-  }
-  const totals = [...groups].map(([k, rs]) => {
-    const resolved = rs.filter((r) => r.resolved === true).length;
+  const totals = [...groupBy(results, (r) => `${kindOf(r)} | ${r.arm}`)].map(([k, rs]) => {
     const sum = (key: "cost" | "wallSeconds"): number => rs.reduce((s, r) => s + totalOf(r, key), 0);
-    return `| ${k} | ${resolved}/${rs.length} | ${money(sum("cost"))} | ${minutes(sum("wallSeconds"))} |`;
+    return `| ${k} | ${summary(rs).resolved} | ${money(sum("cost"))} | ${minutes(sum("wallSeconds"))} |`;
   });
   return [
-    `# SWE-bench Pro: ${PLUGIN} skills and plain Claude Code`,
-    `Started ${meta.started}. Plugin: ${meta.plugin}. Both arms run Claude Code on ${MODEL} at its default effort, without ${DISALLOWED_TOOLS.join(" or ")}; the plain arm loads no plugin.`,
-    ONE_RUN,
+    `# SWE-bench Pro: ${meta.plugin} and plain Claude Code`,
+    ...(meta.note ? [meta.note] : []),
+    `Started ${meta.started}. Plugin: ${meta.plugin}. Every arm runs Claude Code on ${models} at its default effort, without ${DISALLOWED_TOOLS.join(" or ")}; the plain arm loads no plugin.`,
+    several ? SEVERAL_RUNS : ONE_RUN,
     NO_REVIEW,
-    "## Per task and arm",
-    "| Task | Kind | Arm | Verdict | Fail-to-pass | Cost | Wall time | Agents | How it ended |\n| -- | -- | -- | -- | -- | -- | -- | -- | -- |\n" +
-      rows.join("\n"),
+    "## Totals",
+    table(["Kind", "Arm", "Resolved", "Cost", "Wall time"], totals),
+    ...(meta.against ? against(results, meta.against) : []),
+    "## Per task, arm and run",
+    "Regressions are the tests that passed before the change and no longer do.",
+    table(
+      [
+        "Task",
+        "Kind",
+        "Arm",
+        "Run",
+        "Verdict",
+        "Fail-to-pass",
+        "Regressions",
+        "Cost",
+        "Wall time",
+        "Agents",
+        "Patch",
+        "How it ended",
+      ],
+      rows,
+    ),
     ...(split.length > 0
       ? [
           "## Shape → story phases",
-          "| Task | Arm | Phase | Cost | Wall time | Agents | How it ended |\n| -- | -- | -- | -- | -- | -- | -- |\n" +
-            split.join("\n"),
+          table(["Task", "Arm", "Run", "Phase", "Cost", "Wall time", "Agents", "How it ended"], split),
         ]
       : []),
-    "## Totals",
-    "| Kind | Arm | Resolved | Cost | Wall time |\n| -- | -- | -- | -- | -- |\n" + totals.join("\n"),
     "",
   ].join("\n\n");
 }

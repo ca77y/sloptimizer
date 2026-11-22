@@ -30,6 +30,7 @@ plugins/
 eval/
   smoke/                             # one smoke case per skill, and the project they run in
   swepro/                            # the SWE-bench Pro comparison
+  results/                           # the eval report released for each plugin version
 docs/                                # architecture, design, git, board, card templates, spikes
 library/                             # research wiki (Obsidian-compatible)
 ```

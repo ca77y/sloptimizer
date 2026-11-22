@@ -35,3 +35,13 @@ Any number of runs can work at once, on different cards, without stepping on eac
 - **Scratch work goes under the workspace's `.tmp/`**, never a shared path.
 - **Shared files are append-friendly**: one line per entry, sorted, each run adding only its own lines, so parallel PRs merge cleanly. Git history is the log.
 - **Each PR brings in the latest default branch before it's pushed.**
+
+## Three ways to check
+
+Each answers one question, and none does another's job.
+
+- **`make test` asks whether the plugin is put together right.** It checks structure and links: skills and agents are named after their files, everything they name exists, nothing is left unused, and the code the evals run on does what it says. It calls no model, so it runs on every commit. It never judges what a skill or agent says: wording is tested by running it.
+- **`make smoke` asks whether each skill works.** Every skill is started the way a user starts it, in one small project, and runs to the end. It passes when what the skill produced is right: the card, the pull request, the answer. It covers every skill, takes minutes, and runs when a skill or agent has changed.
+- **`make eval` asks whether a skill is worth having, and whether a change made it better or worse.** It runs real tasks whose hidden tests decide the verdict, beside plain Claude Code, and compares the result with the report released for the version before. It covers the skills hidden tests can grade, takes hours, and runs before a release.
+
+A check that calls a model runs only when the user asks.

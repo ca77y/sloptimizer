@@ -15,6 +15,8 @@
     // The smoke fixture is a project of its own, written the way bootstrap's templates are.
     "eval/smoke/project/**",
     "eval/smoke/*/seed/**",
+    // Released eval reports are written by the harness.
+    "eval/results/**",
     // The library follows its own conventions in library/_meta/librarian.md.
     "library/**",
   ],

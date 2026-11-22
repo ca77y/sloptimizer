@@ -3,7 +3,7 @@ PLUGINS ?= $(wildcard plugins/*/)
 # The model that judges a smoke case's llm graders. The default small judge fails correct answers on their format.
 JUDGE ?= opus
 
-.PHONY: help install lint format check typecheck test smoke install-eval eval eval-grader
+.PHONY: help install lint format check typecheck test smoke install-eval eval eval-grader eval-release
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-13s %s\n", $$1, $$2}'
@@ -52,8 +52,10 @@ smoke: ## Smoke eval of every skill, run to the end; calls models
 
 # The SWE-bench Pro comparison of the slopmaxx skills with plain Claude Code (eval/swepro/README.md). It calls
 # models and runs Docker: run only on request. install-eval fetches the pinned task folders, dataset rows and task
-# images into the ignored .eval/. TASKS limits a run to some tasks (a kind, `shape`, or part of an instance id), ARMS
-# to one arm, JOBS sets how many arms run at once, and RUN=<run dir> resumes a stopped run.
+# images into the ignored .eval/. TASKS limits a run to some tasks (a kind, `shape`, or part of an instance id), and
+# ARMS to some arms; `slopmaxx@<git ref>` adds the plugin as a commit or tag has it. MODEL runs another model, RUNS runs each
+# task and arm several times, JOBS sets how many arms run at once, and RUN=<run dir> resumes a stopped run.
+# eval-release writes the newest run, or the runs RUN names, to eval/results/<plugin>-<version>/, which is committed.
 install-eval: ## Fetch the SWE-bench Pro tasks and images, once
 	node eval/swepro/main.ts install
 
@@ -62,3 +64,6 @@ eval: ## Full SWE-bench Pro eval, hours; calls models and runs Docker
 
 eval-grader: ## Check the eval's grader on every reference and empty patch
 	node eval/swepro/main.ts grader
+
+eval-release: ## Release the newest eval run as this version's report, in eval/results/
+	node eval/swepro/main.ts release
