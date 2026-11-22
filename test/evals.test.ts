@@ -72,7 +72,7 @@ for (const plugin of plugins()) {
     });
 
     test("every skill a model can start has a smoke case, and every case names a skill or agent that exists", () => {
-      const named = cases.flatMap((c) => skillGraders(c).map((m) => /^more-slop:([a-z-]+)$/.exec(m)?.[1] ?? m));
+      const named = cases.flatMap((c) => skillGraders(c).map((m) => /^slopmaxx:([a-z-]+)$/.exec(m)?.[1] ?? m));
       for (const s of skills(plugin)) {
         const manual = text(
           frontmatter(read(`plugins/${plugin}/skills/${s}/SKILL.md`)).front,
@@ -86,7 +86,7 @@ for (const plugin of plugins()) {
         for (const g of graders(plugin, c)) {
           const f = graderFront(c, g);
           if (text(f, "tool") !== "Agent") continue;
-          const agent = /\(more-slop:\)\?([a-z-]+)/.exec(text(f, "input_match"))?.[1] ?? "";
+          const agent = /\(slopmaxx:\)\?([a-z-]+)/.exec(text(f, "input_match"))?.[1] ?? "";
           assert.ok(agents(plugin).includes(agent), `${c}/${g} names the agent ${agent}`);
         }
       }

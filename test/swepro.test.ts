@@ -93,7 +93,7 @@ describe("selecting part of the task list", () => {
   });
 
   test("arms select the same way", () => {
-    assert.deepEqual(selectArms([]), ["more-slop", "plain"]);
+    assert.deepEqual(selectArms([]), ["slopmaxx", "plain"]);
     assert.deepEqual(selectArms(["plain"]), ["plain"]);
     assert.throws(() => selectArms(["baseline"]), /unknown arm/);
   });
@@ -108,7 +108,7 @@ describe("what each arm is given", () => {
 
   test("every arm's prompts carry the work item and nothing hidden", () => {
     for (const t of [task("96b997802e"), task("b67138b316"), task("7cbfb812ef"), task("c1f2df4753")]) {
-      for (const arm of ["more-slop", "plain"] as const) {
+      for (const arm of ["slopmaxx", "plain"] as const) {
         const all = phases(t, ROW, arm)
           .map((p) => p.prompt)
           .join("\n");
@@ -123,7 +123,7 @@ describe("what each arm is given", () => {
   test("a shape → story task gives shape and plain Opus the problem statement and interface, without requirements", () => {
     const t = task("c1f2df4753");
     assert.ok(t.shape);
-    const [shape, story] = phases(t, ROW, "more-slop");
+    const [shape, story] = phases(t, ROW, "slopmaxx");
     const [plain] = phases(t, ROW, "plain");
     for (const p of [shape, plain]) {
       assert.ok(p);
@@ -132,16 +132,16 @@ describe("what each arm is given", () => {
       assert.ok(!p.prompt.includes(ROW.requirements));
       assert.ok(!p.prompt.includes("## Requirements"));
     }
-    assert.match(shape?.prompt ?? "", /^\/more-slop:shape /);
-    assert.equal(story?.prompt, "/more-slop:deliver STORY-1");
+    assert.match(shape?.prompt ?? "", /^\/slopmaxx:shape /);
+    assert.equal(story?.prompt, "/slopmaxx:deliver STORY-1");
   });
 
   test("each kind runs on its skill, a story on its card, and plain on the bare text", () => {
-    assert.match(phases(task("96b997802e"), ROW, "more-slop")[0]?.prompt ?? "", /^\/more-slop:deliver # Title/);
-    assert.match(phases(task("b67138b316"), ROW, "more-slop")[0]?.prompt ?? "", /^\/more-slop:bugfix # Title/);
+    assert.match(phases(task("96b997802e"), ROW, "slopmaxx")[0]?.prompt ?? "", /^\/slopmaxx:deliver # Title/);
+    assert.match(phases(task("b67138b316"), ROW, "slopmaxx")[0]?.prompt ?? "", /^\/slopmaxx:bugfix # Title/);
     assert.deepEqual(
-      phases(task("7cbfb812ef"), ROW, "more-slop").map((p) => p.prompt),
-      ["/more-slop:deliver STORY-1"],
+      phases(task("7cbfb812ef"), ROW, "slopmaxx").map((p) => p.prompt),
+      ["/slopmaxx:deliver STORY-1"],
     );
     const plain = phases(task("7cbfb812ef"), ROW, "plain");
     assert.equal(plain.length, 1);
@@ -149,13 +149,13 @@ describe("what each arm is given", () => {
     assert.ok(plain[0]?.prompt.includes(ROW.requirements));
   });
 
-  test("the plain arm has no plugin and the plugin arm only more-slop, both without the user's settings", () => {
-    const plain = claudeArgs("plain", { prompt: "p", sessionId: "s", pluginDir: "/x/plugins/more-slop" });
-    const plugin = claudeArgs("more-slop", { prompt: "p", sessionId: "s", pluginDir: "/x/plugins/more-slop" });
+  test("the plain arm has no plugin and the plugin arm only slopmaxx, both without the user's settings", () => {
+    const plain = claudeArgs("plain", { prompt: "p", sessionId: "s", pluginDir: "/x/plugins/slopmaxx" });
+    const plugin = claudeArgs("slopmaxx", { prompt: "p", sessionId: "s", pluginDir: "/x/plugins/slopmaxx" });
     assert.ok(!plain.includes("--plugin-dir"));
     assert.deepEqual(plugin.slice(plugin.indexOf("--plugin-dir"), plugin.indexOf("--plugin-dir") + 2), [
       "--plugin-dir",
-      "/x/plugins/more-slop",
+      "/x/plugins/slopmaxx",
     ]);
     for (const args of [plain, plugin]) {
       assert.equal(args[args.indexOf("--setting-sources") + 1], "project,local");
@@ -286,7 +286,7 @@ const result = (over: Partial<ArmResult>): ArmResult => ({
   task: "instance_flipt-io__flipt-e50808c03e4b9d25a6a78af9c61a3b1616ea356b",
   kind: "story",
   shape: true,
-  arm: "more-slop",
+  arm: "slopmaxx",
   resolved: true,
   failToPass: { passed: 23, total: 23 },
   phases: [
@@ -307,13 +307,13 @@ describe("the report", () => {
         phases: [{ name: "plain", cost: 5, agents: 1, wallSeconds: 1200, ending: "success", reportedCost: 5 }],
       }),
     ],
-    { started: "2026-11-21T00:00:00Z", plugin: "more-slop 0.1.0" },
+    { started: "2026-11-21T00:00:00Z", plugin: "slopmaxx 0.1.0" },
   );
 
   test("lists each task and arm with its verdict, cost, wall time, agent count, and how it ended", () => {
     assert.match(
       report,
-      /\| flipt-e50808c \| shape → story \| more-slop \| resolved \| 23\/23 \| \$100\.00 \| 160\.0 min \| 4 \| success → success \|/,
+      /\| flipt-e50808c \| shape → story \| slopmaxx \| resolved \| 23\/23 \| \$100\.00 \| 160\.0 min \| 4 \| success → success \|/,
     );
     assert.match(
       report,
@@ -322,11 +322,11 @@ describe("the report", () => {
   });
 
   test("records shape and deliver apart as well as in total", () => {
-    assert.match(report, /\| flipt-e50808c \| more-slop \| shape \| \$4\.00 \| 10\.0 min \| 1 \|/);
-    assert.match(report, /\| flipt-e50808c \| more-slop \| deliver \| \$96\.00 \| 150\.0 min \| 3 \|/);
+    assert.match(report, /\| flipt-e50808c \| slopmaxx \| shape \| \$4\.00 \| 10\.0 min \| 1 \|/);
+    assert.match(report, /\| flipt-e50808c \| slopmaxx \| deliver \| \$96\.00 \| 150\.0 min \| 3 \|/);
   });
 
-  test("states that each figure comes from one run, and names the arms more-slop and plain", () => {
+  test("states that each figure comes from one run, and names the arms slopmaxx and plain", () => {
     assert.ok(report.includes(ONE_RUN));
     assert.ok(!/baseline/i.test(report));
   });

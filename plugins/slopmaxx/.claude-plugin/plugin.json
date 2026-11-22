@@ -1,0 +1,10 @@
+{
+  "name": "slopmaxx",
+  "version": "0.2.0",
+  "description": "Skills for Claude Code and any agent supported by npx skills.",
+  "author": {
+    "name": "ca77y",
+    "url": "https://github.com/ca77y"
+  },
+  "repository": "https://github.com/ca77y/sloptimizer"
+}

@@ -45,7 +45,7 @@ smoke: ## Smoke evals, about ten minutes; calls models
 	  CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0 claude plugin eval "$$p" --tag smoke -j 7 --allow-tools Bash Write Edit Agent Skill WebFetch WebSearch --scaffold --ablation none --trust-plugin --no-publish --output-dir "$$out/results" --report "$$out/report.html" || exit 1; \
 	done
 
-# The SWE-bench Pro comparison of the more-slop skills with plain Claude Code (scripts/swepro/README.md). It calls
+# The SWE-bench Pro comparison of the slopmaxx skills with plain Claude Code (scripts/swepro/README.md). It calls
 # models and runs Docker: run only on request. install-eval fetches the pinned task folders, dataset rows and task
 # images into the ignored .eval/. TASKS limits a run to some tasks (a kind, `shape`, or part of an instance id), ARMS
 # to one arm, JOBS sets how many arms run at once, and RUN=<run dir> resumes a stopped run.

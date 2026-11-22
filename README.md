@@ -11,14 +11,14 @@ One repo, two installers:
 
 ```sh
 /plugin marketplace add ca77y/sloptimizer
-/plugin install more-slop@sloptimizer
+/plugin install slopmaxx@sloptimizer
 ```
 
 Or from the shell:
 
 ```sh
 claude plugin marketplace add ca77y/sloptimizer
-claude plugin install more-slop@sloptimizer
+claude plugin install slopmaxx@sloptimizer
 ```
 
 ### npx skills (any agent)
@@ -28,7 +28,7 @@ claude plugin install more-slop@sloptimizer
 npx skills add ca77y/sloptimizer
 
 # One plugin only: point at its folder
-npx skills add https://github.com/ca77y/sloptimizer/tree/master/plugins/more-slop
+npx skills add https://github.com/ca77y/sloptimizer/tree/master/plugins/slopmaxx
 
 # One skill only
 npx skills add ca77y/sloptimizer --skill shape
@@ -42,7 +42,7 @@ npx skills add ca77y/sloptimizer --list
 ```text
 .claude-plugin/marketplace.json      # marketplace "sloptimizer", lists every plugin
 plugins/
-  more-slop/
+  slopmaxx/
     .claude-plugin/plugin.json       # plugin manifest
     skills/
       <skill-name>/SKILL.md          # one folder per skill

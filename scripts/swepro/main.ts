@@ -1,6 +1,6 @@
-// Runs the SWE-bench Pro comparison of the more-slop skills with plain Claude Code. Usage:
+// Runs the SWE-bench Pro comparison of the slopmaxx skills with plain Claude Code. Usage:
 //   node scripts/swepro/main.ts install [--tasks <terms>]
-//   node scripts/swepro/main.ts run [--tasks <terms>] [--arms more-slop,plain] [--jobs <n>] [--resume <run dir>] [--keep]
+//   node scripts/swepro/main.ts run [--tasks <terms>] [--arms slopmaxx,plain] [--jobs <n>] [--resume <run dir>] [--keep]
 //   node scripts/swepro/main.ts grader [--tasks <terms>] [--jobs <n>]
 // Everything it downloads or writes stays under .eval/, which git ignores. See scripts/swepro/README.md.
 //

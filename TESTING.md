@@ -41,7 +41,7 @@ A criterion no kind covers, or one that couldn't be checked, is listed under **N
 - A case is a folder `plugins/<plugin>/evals/<name>/` holding `case.yaml`, `prompt.md`, `scaffold.sh` and
   `graders/`, with `name` equal to the folder name.
 - Every skill a model can start has a smoke case.
-- `prompt.md` asks for the skill by name, `Use the more-slop:<skill> skill to …`, is tagged `smoke`, and sets
+- `prompt.md` asks for the skill by name, `Use the slopmaxx:<skill> skill to …`, is tagged `smoke`, and sets
   `timeout_seconds` to at most 600.
 - `scaffold.sh` builds a git repository on `main` with everything the skill reads, and reaches no real tracker or
   forge. Its `docs/GIT.md` has a delivery work on the branch `smoke` in the checkout.

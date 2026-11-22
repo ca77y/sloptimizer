@@ -8,8 +8,8 @@
   },
   "plugins": [
     {
-      "name": "more-slop",
-      "source": "./plugins/more-slop",
+      "name": "slopmaxx",
+      "source": "./plugins/slopmaxx",
       "description": "Skills for Claude Code and any agent supported by npx skills.",
       "category": "productivity"
     }

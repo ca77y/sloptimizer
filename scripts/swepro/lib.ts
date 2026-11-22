@@ -3,9 +3,9 @@
 
 /** How a task goes through the plugin: a story card, a bug report, or a change small enough to hand over as text. */
 type Kind = "story" | "bugfix" | "trivial";
-export type Arm = "more-slop" | "plain";
-const ARMS: readonly Arm[] = ["more-slop", "plain"];
-export const PLUGIN = "more-slop";
+export type Arm = "slopmaxx" | "plain";
+const ARMS: readonly Arm[] = ["slopmaxx", "plain"];
+export const PLUGIN = "slopmaxx";
 
 export interface Task {
   id: string;

@@ -1,6 +1,6 @@
 # SWE-bench Pro comparison
 
-Runs SWE-bench Pro v2 tasks through the more-slop skills and through plain Claude Code, both on Opus 5.5, grades
+Runs SWE-bench Pro v2 tasks through the slopmaxx skills and through plain Claude Code, both on Opus 5.5, grades
 both arms with each task's hidden tests, and reports, per task and arm, whether it resolved the task, its cost, wall
 time, agent count, and how the run ended.
 
@@ -26,7 +26,7 @@ make eval                          # all 16 tasks, both arms
 
 - `TASKS` limits a run to some tasks: a kind (`story`, `bugfix`, `trivial`), `shape` for the shape → story tasks, or
   any part of an instance id, separated by commas. A term that names no task stops the run.
-- `ARMS` is `more-slop`, `plain`, or both (the default).
+- `ARMS` is `slopmaxx`, `plain`, or both (the default).
 - `JOBS` sets how many arms run at once (default 4). Each arm keeps one task container running.
 - `RUN=.eval/runs/<stamp>` resumes a stopped run: finished arms are kept and the rest run again.
 - `KEEP=1` keeps each arm's repository after grading, for a look at what it did.
@@ -48,10 +48,10 @@ For each task and arm:
 3. Runs Claude Code headless in the repository on Opus 5.5, with `--setting-sources project,local` and no MCP
    servers, so your own plugins, hooks, and settings stay out of both arms, and without WebFetch or WebSearch, so
    neither arm can look up the upstream fix. Its Bash tool runs in bash on every machine (`SHELL=/bin/bash`):
-   - more-slop: a copy of `plugins/more-slop` in the temp folder, without its eval cases, and
-     `/more-slop:deliver` with the task text, `/more-slop:bugfix` with the task text, or `/more-slop:deliver STORY-1`,
+   - slopmaxx: a copy of `plugins/slopmaxx` in the temp folder, without its eval cases, and
+     `/slopmaxx:deliver` with the task text, `/slopmaxx:bugfix` with the task text, or `/slopmaxx:deliver STORY-1`,
      each working as the setup's `docs/GIT.md` says: on the branch `swepro` in the checkout. A shape → story
-     task first runs `/more-slop:shape` on the problem statement and interface, then deliver on the card shape filed.
+     task first runs `/slopmaxx:shape` on the problem statement and interface, then deliver on the card shape filed.
    - plain: the task text and a pointer to `TESTING.md`.
 4. Takes the arm's final code as a patch on the seed, leaving out the setup files.
 5. Grades the patch in a fresh container of the task's published image with the task's own verifier, which applies
