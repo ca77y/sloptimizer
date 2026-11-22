@@ -13,6 +13,7 @@ How the repo and its plugins are built. The principles they are designed against
 - A skill is an entry point: `skills/<name>/SKILL.md`, with `name` equal to the folder and a `description` that says when to use it. Its `references/` hold what only the skill needs, such as `split`'s plan bar or `deliver`'s spec template, and `resources/` hold files it copies into a project, such as `bootstrap`'s templates for project files.
 - Every skill but `bootstrap` can be started by the model from its description; `bootstrap` sets `disable-model-invocation`, because it works through each file with the user.
 - A skill or an agent may use any other skill when the work calls for it.
+- `agy-review` is the one skill that reaches outside Claude Code: it runs Google's Antigravity CLI, `agy`, headless, so the review comes from a different tool and model. It is a skill, not an agent, because `agy` is already the independent reviewer and judging its findings needs the main session's context. It needs `agy` installed and signed in on the user's machine, and reports when it isn't.
 - The main session does the work. An agent exists only where independence or a clean context is the point, and each skill decides when to dispatch it:
 
 | Agent       | Model  | Does                                                                                                | Dispatched by              |

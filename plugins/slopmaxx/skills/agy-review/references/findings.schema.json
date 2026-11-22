@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "summary": {
+      "type": "string",
+      "description": "One sentence on what the change is for, then the overall assessment and any defect already in the base."
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string" },
+          "line": { "type": "integer" },
+          "blocking": { "type": "boolean" },
+          "issue": { "type": "string" },
+          "fix": { "type": "string" }
+        },
+        "required": ["file", "line", "blocking", "issue", "fix"]
+      }
+    }
+  },
+  "required": ["summary", "findings"]
+}
