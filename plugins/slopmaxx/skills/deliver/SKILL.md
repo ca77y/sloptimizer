@@ -1,6 +1,7 @@
 ---
 name: deliver
 description: Takes a story card, or a described change, to a reviewed pull request — tests first, validated by running the app, with a PR description written for the reviewer. Use when the user asks to deliver, implement, build or ship a card, ticket, story or change.
+disable-model-invocation: true
 ---
 
 # Deliver

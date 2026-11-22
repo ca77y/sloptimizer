@@ -1,4 +1,4 @@
-// Reads the repo's own files for the static tests: plugins, their skills, agents and eval cases.
+// Reads the repo's own files for the static tests: plugins, their skills and agents, and the smoke cases.
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
@@ -62,13 +62,5 @@ export const agents = (plugin: string): string[] =>
         .map((f) => f.slice(0, -3))
         .toSorted(byName)
     : [];
-export const evalCases = (plugin: string): string[] =>
-  dirs(`plugins/${plugin}/evals`).filter((d) => exists(`plugins/${plugin}/evals/${d}/prompt.md`));
-export const graders = (plugin: string, c: string): string[] => {
-  const dir = `plugins/${plugin}/evals/${c}/graders`;
-  return exists(dir)
-    ? readdirSync(path.join(ROOT, dir))
-        .filter((f) => f.endsWith(".md"))
-        .toSorted(byName)
-    : [];
-};
+/** The smoke cases under eval/smoke/: every folder there that holds a case. */
+export const smokeCases = (): string[] => dirs("eval/smoke").filter((d) => exists(`eval/smoke/${d}/case.yaml`));

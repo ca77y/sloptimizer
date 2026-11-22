@@ -1,13 +1,9 @@
 # sloptimizer
 
-One repo, two installers:
-
-- a **Claude Code plugin marketplace** called `sloptimizer`
-- a **skills repo** for [`npx skills`](https://github.com/vercel-labs/skills), usable from Claude Code, Cursor, Codex, and the rest
+A **Claude Code plugin marketplace** called `sloptimizer`. Its plugins are written for Claude Code and installed
+through it.
 
 ## Install
-
-### Claude Code (plugin marketplace)
 
 ```sh
 /plugin marketplace add ca77y/sloptimizer
@@ -21,22 +17,6 @@ claude plugin marketplace add ca77y/sloptimizer
 claude plugin install slopmaxx@sloptimizer
 ```
 
-### npx skills (any agent)
-
-```sh
-# Everything in the repo
-npx skills add ca77y/sloptimizer
-
-# One plugin only: point at its folder
-npx skills add https://github.com/ca77y/sloptimizer/tree/master/plugins/slopmaxx
-
-# One skill only
-npx skills add ca77y/sloptimizer --skill shape
-
-# See what's available
-npx skills add ca77y/sloptimizer --list
-```
-
 ## Layout
 
 ```text
@@ -46,12 +26,13 @@ plugins/
     .claude-plugin/plugin.json       # plugin manifest
     skills/
       <skill-name>/SKILL.md          # one folder per skill
+    agents/<agent-name>.md           # one file per agent
+eval/
+  smoke/                             # one smoke case per skill, and the project they run in
+  swepro/                            # the SWE-bench Pro comparison
 docs/                                # architecture, design, git, board, card templates, spikes
 library/                             # research wiki (Obsidian-compatible)
 ```
-
-`npx skills` reads `.claude-plugin/marketplace.json` and scans each plugin's
-`skills/` folder, so there's nothing extra to keep in sync.
 
 ## Adding things
 
@@ -63,15 +44,12 @@ library/                             # research wiki (Obsidian-compatible)
 1. Create `plugins/<plugin>/.claude-plugin/plugin.json` and `plugins/<plugin>/skills/`.
 2. Add an entry to `.claude-plugin/marketplace.json` with `"source": "./plugins/<plugin>"`.
 
-Skill names must be unique across the whole repo, because `npx skills`
-installs them into one flat folder.
-
 ## Test
 
 ```sh
 make install   # once: the dev tools
 make check     # what CI runs: plugin validation, typecheck, static tests
-make smoke     # quick evals of each skill, about ten minutes; calls models
+make smoke     # every skill run to the end in a small project; calls models
 make eval      # the full SWE-bench Pro eval, hours; calls models and runs Docker
 ```
 

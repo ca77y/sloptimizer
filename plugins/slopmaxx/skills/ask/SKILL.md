@@ -1,6 +1,7 @@
 ---
 name: ask
 description: Answers a question, comparison or synthesis from the project's existing research library, citing its pages and naming gaps and stale evidence, without new research or writes. Use when the user asks what the library, the research or the notes say about something.
+disable-model-invocation: true
 ---
 
 # Ask

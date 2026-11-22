@@ -25,9 +25,9 @@ import {
   type ArmResult,
   type Row,
   type TaskList,
-} from "../scripts/swepro/lib.ts";
+} from "../eval/swepro/lib.ts";
 
-const LIST = JSON.parse(readFileSync("scripts/swepro/tasks.json", "utf8")) as TaskList;
+const LIST = JSON.parse(readFileSync("eval/swepro/tasks.json", "utf8")) as TaskList;
 const byKind = (k: string): number => LIST.tasks.filter((t) => t.kind === k).length;
 
 // A row as the dataset holds it, with the hidden material the harness must never pass on.

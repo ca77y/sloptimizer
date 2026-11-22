@@ -23,7 +23,7 @@
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:format": "prettier --check --cache .",
     "lint:dead": "knip",
-    "lint:dup": "jscpd scripts test",
+    "lint:dup": "jscpd scripts eval test",
     "lint:pins": "node scripts/check-pins.ts",
     "test:unit": "node --test \"test/**/*.test.ts\""
   }

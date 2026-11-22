@@ -22,7 +22,6 @@ jobs:
       # make lint validates the plugins with the Claude Code CLI, which needs no credentials for that.
       - run: npm install --global @anthropic-ai/claude-code
       - run: make lint
-      - run: make discovery
 
   test:
     runs-on: ubuntu-latest

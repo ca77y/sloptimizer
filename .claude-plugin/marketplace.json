@@ -10,7 +10,7 @@
     {
       "name": "slopmaxx",
       "source": "./plugins/slopmaxx",
-      "description": "Skills for Claude Code and any agent supported by npx skills.",
+      "description": "Takes work from an idea to a pull request in Claude Code: shapes and splits cards, delivers stories and bug fixes test first, runs spikes, and keeps a cited research library.",
       "category": "productivity"
     }
   ]

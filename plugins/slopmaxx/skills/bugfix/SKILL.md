@@ -1,6 +1,7 @@
 ---
 name: bugfix
 description: Fixes a reported bug end to end — has it reproduced independently, fixes it test first, confirms the reproduction now passes, and opens a PR showing before and after. Use when the user asks to fix, debug or deliver a bug, a Bug card, or something broken, failing or slow.
+disable-model-invocation: true
 ---
 
 # Bugfix

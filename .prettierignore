@@ -1,5 +1,8 @@
 # Bootstrap templates carry placeholders Prettier would rewrite
 plugins/*/skills/*/resources/
+# The smoke fixture is a project of its own
+eval/smoke/project/
+eval/smoke/*/seed/
 # npm writes its lockfile
 package-lock.json
 # The library follows its own conventions in library/_meta/librarian.md

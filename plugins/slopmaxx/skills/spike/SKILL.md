@@ -1,6 +1,7 @@
 ---
 name: spike
 description: Answers a bounded technical question with a cited findings document, measuring what evidence can't settle with a throwaway prototype, delivered as a PR. Use when the user asks to spike, investigate, evaluate, compare options or find out whether something works, or hands over a Spike card.
+disable-model-invocation: true
 ---
 
 # Spike

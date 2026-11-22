@@ -12,6 +12,9 @@
     ".tmp/**",
     ".worktrees/**",
     "plugins/*/skills/*/resources/**",
+    // The smoke fixture is a project of its own, written the way bootstrap's templates are.
+    "eval/smoke/project/**",
+    "eval/smoke/*/seed/**",
     // The library follows its own conventions in library/_meta/librarian.md.
     "library/**",
   ],

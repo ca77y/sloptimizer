@@ -4,14 +4,13 @@ How the repo and its plugins are built. The principles they are designed against
 
 ## Distribution
 
-- One repo, two installers: the `sloptimizer` Claude Code marketplace in `.claude-plugin/marketplace.json`, and a skills source for `npx skills`, which scans each plugin's `skills/` folder.
-- Each plugin is a folder under `plugins/` with its manifest in `.claude-plugin/plugin.json`, its skills in `skills/`, its agents in `agents/`, and its smoke eval cases in `evals/`.
-- `npx skills` installs every skill into one flat folder, so skill names are unique across the whole repo.
+- The repo is the `sloptimizer` Claude Code marketplace, listed in `.claude-plugin/marketplace.json`. The plugins are written for Claude Code and installed only through it, so a skill can rely on its plugin's agents and on Claude Code's own features.
+- Each plugin is a folder under `plugins/` with its manifest in `.claude-plugin/plugin.json`, its skills in `skills/`, and its agents in `agents/`. It ships no eval cases; those live in `eval/`.
 
 ## Skills and agents
 
 - A skill is an entry point: `skills/<name>/SKILL.md`, with `name` equal to the folder and a `description` that says when to use it. Its `references/` hold what only the skill needs, such as `split`'s plan bar or `deliver`'s spec template, and `resources/` hold files it copies into a project, such as `bootstrap`'s templates for project files.
-- Every skill but `bootstrap` can be started by the model from its description; `bootstrap` sets `disable-model-invocation`, because it works through each file with the user.
+- The user starts every skill, by typing its name: each sets `disable-model-invocation`, because a skill writes to the board, the repo or the forge and the user decides when that happens. `agy-review` is the exception for now, so a delivery can run it before its PR opens.
 - A skill or an agent may use any other skill when the work calls for it.
 - `agy-review` is the one skill that reaches outside Claude Code: it runs Google's Antigravity CLI, `agy`, headless, so the review comes from a different tool and model. It is a skill, not an agent, because `agy` is already the independent reviewer and judging its findings needs the main session's context. It needs `agy` installed and signed in on the user's machine, and reports when it isn't.
 - The main session does the work. An agent exists only where independence or a clean context is the point, and each skill decides when to dispatch it:
@@ -50,6 +49,6 @@ A skill knows nothing about a project until it reads the project's own files, an
 
 ## Tooling
 
-- Repo tooling is TypeScript run directly by Node 26, under `scripts/`, with static tests in `test/`. The `Makefile` is the entry point; `make help` lists the targets.
-- `make lint` runs every static check, and the pre-commit hook runs it; `make test` runs the unit tests; `make check` runs both and `npx skills` discovery, as CI does.
-- Two evals call models and run only when the user asks: `make smoke`, the cases under `plugins/<plugin>/evals/` through `claude plugin eval`, and `make eval`, the SWE-bench Pro comparison in `scripts/swepro/`. `TESTING.md` says how each is used.
+- Repo tooling is TypeScript run directly by Node 26, under `scripts/` and `eval/`, with static tests in `test/`. The `Makefile` is the entry point; `make help` lists the targets.
+- `make lint` runs every static check, and the pre-commit hook runs it; `make test` runs the unit tests; `make check` runs both, as CI does.
+- Two evals call models and run only when the user asks. `make smoke` runs the cases under `eval/smoke/` through `claude plugin eval`, one per skill, each to the end in a small project of its own; because that command reads cases from inside a plugin, the target copies the plugin and the cases into a temporary folder first. `make eval` runs the SWE-bench Pro comparison in `eval/swepro/`. `TESTING.md` says how each is used.

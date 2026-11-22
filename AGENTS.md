@@ -1,9 +1,10 @@
 # Sloptimizer
 
 Claude Code plugins under `plugins/`, listed by the `sloptimizer` marketplace in
-`.claude-plugin/`; the same repo is a skills source for `npx skills`.
+`.claude-plugin/`.
 
-- **`plugins/<plugin>/`** — one plugin: its manifest, skills, agents and smoke evals.
+- **`plugins/<plugin>/`** — one plugin: its manifest, skills and agents.
+- **eval/** — the evals, which call models: `smoke/`, one case per skill, and `swepro/`, the SWE-bench Pro comparison.
 - **scripts/** — repo tooling, run through the `Makefile`.
 - **test/** — static tests.
 - **docs/** — architecture, design, git, board, card templates, spikes.

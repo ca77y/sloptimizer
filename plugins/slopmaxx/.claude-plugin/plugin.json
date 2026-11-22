@@ -1,7 +1,7 @@
 {
   "name": "slopmaxx",
   "version": "0.3.0",
-  "description": "Skills for Claude Code and any agent supported by npx skills.",
+  "description": "Takes work from an idea to a pull request in Claude Code: shapes and splits cards, delivers stories and bug fixes test first, runs spikes, and keeps a cited research library.",
   "author": {
     "name": "ca77y",
     "url": "https://github.com/ca77y"

@@ -1,6 +1,7 @@
 ---
 name: split
 description: Splits one ticket, card or larger request into the fewest small, independent story cards, each one PR, with the order between them, and files them on the project's board. Use when the user asks to split, break down, slice or decompose a ticket, card, issue, epic or plan into tasks, stories or tickets.
+disable-model-invocation: true
 ---
 
 # Split

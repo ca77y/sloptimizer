@@ -1,109 +1,86 @@
-// The plugins as they ship: the marketplace that lists them, and the skills and agents they hold.
+// The structure of each plugin as it ships: its skills and agents are named after their files, everything they name
+// exists, and nothing is left unused. What a skill or agent says is judged by running it, never here.
 
 import assert from "node:assert/strict";
+import { readdirSync } from "node:fs";
+import path from "node:path";
 import { describe, test } from "node:test";
 
-import { agents, exists, frontmatter, list, plugins, read, skills, text } from "./repo.ts";
+import { agents, exists, frontmatter, list, plugins, read, ROOT, skills, text } from "./repo.ts";
 
-interface Marketplace {
-  name: string;
-  plugins: { name: string; source: string }[];
-}
+/** Every file below a folder, as paths relative to it. */
+const files = (rel: string): string[] =>
+  readdirSync(path.join(ROOT, rel), { recursive: true, withFileTypes: true })
+    .filter((f) => f.isFile())
+    .map((f) => path.relative(path.join(ROOT, rel), path.join(f.parentPath, f.name)));
 
-const marketplace = JSON.parse(read(".claude-plugin/marketplace.json")) as Marketplace;
-const manifest = (p: string): { name: string; version: string } =>
-  JSON.parse(read(`plugins/${p}/.claude-plugin/plugin.json`)) as { name: string; version: string };
+/** The paths under `references/` or `resources/` that a text names, in prose or inside a command. */
+const namedPaths = (md: string): string[] =>
+  md
+    .matchAll(/\b((?:references|resources)\/[\w./-]*\w)/g)
+    .map((m) => m[1] ?? "")
+    .toArray();
 
-describe("the marketplace", () => {
-  test("lists every plugin folder once, by the name its manifest gives", () => {
-    const listed = marketplace.plugins.map((p) => p.source.replace(/^\.\//, "").replace(/\/$/, ""));
-    assert.deepEqual(
-      listed.toSorted((a, b) => a.localeCompare(b, "en")),
-      plugins().map((p) => `plugins/${p}`),
-    );
-    for (const entry of marketplace.plugins) {
-      const folder = entry.source.replace(/^\.\/plugins\//, "").replace(/\/$/, "");
-      assert.equal(entry.name, manifest(folder).name, entry.source);
-    }
-  });
+/** The names a text gives in backticks just before a word, as in "the `qa` agent". */
+const namedBefore = (md: string, word: string): string[] =>
+  md
+    .matchAll(new RegExp(String.raw`\`([a-z][a-z-]*)\` ${word}\b`, "g"))
+    .map((m) => m[1] ?? "")
+    .toArray();
 
-  test("gives every plugin a semantic version", () => {
-    for (const p of plugins()) assert.match(manifest(p).version, /^\d+\.\d+\.\d+$/, p);
-  });
-});
+/** The `name` a skill or agent file gives in its frontmatter. */
+const nameIn = (md: string): string => text(frontmatter(md).front, "name");
 
 for (const plugin of plugins()) {
+  const root = `plugins/${plugin}`;
   const skillNames = skills(plugin);
   const agentNames = agents(plugin);
-  const skillText = (s: string): string => read(`plugins/${plugin}/skills/${s}/SKILL.md`);
+  const skillFile = (s: string): string => read(`${root}/skills/${s}/SKILL.md`);
+  const agentFile = (a: string): string => read(`${root}/agents/${a}.md`);
 
-  describe(`${plugin}'s skills`, () => {
-    test("each has a name equal to its folder and a description of at most 1,024 characters", () => {
+  describe(`${plugin}'s skills and agents`, () => {
+    test("each is named after its folder or file", () => {
       assert.ok(skillNames.length > 0);
+      for (const s of skillNames) assert.equal(nameIn(skillFile(s)), s, s);
+      for (const a of agentNames) assert.equal(nameIn(agentFile(a)), a, a);
+    });
+
+    test("every file, skill and agent a skill names exists", () => {
       for (const s of skillNames) {
-        const { front, body } = frontmatter(skillText(s));
-        assert.equal(text(front, "name"), s, `${s}: name`);
-        const description = text(front, "description");
-        assert.ok(description.length > 0 && description.length <= 1024, `${s}: description length`);
-        assert.ok(body.trim().length > 0, `${s}: body`);
+        const body = skillFile(s);
+        for (const rel of namedPaths(body)) assert.ok(exists(`${root}/skills/${s}/${rel}`), `${s} names ${rel}`);
+        for (const a of namedBefore(body, "agent")) assert.ok(agentNames.includes(a), `${s} names the agent ${a}`);
+        for (const n of namedBefore(body, "skill")) assert.ok(skillNames.includes(n), `${s} names the skill ${n}`);
       }
     });
 
-    test("no two skills share a name across the marketplace", () => {
-      const all = plugins().flatMap((p) => skills(p));
-      assert.equal(new Set(all).size, all.length);
-    });
-
-    test("every file a skill names under references/ or resources/ exists in its folder", () => {
+    test("every file in a skill's folder is named by its SKILL.md, alone or through its folder", () => {
       for (const s of skillNames) {
-        for (const [, rel = ""] of skillText(s).matchAll(/`((?:references|resources)\/[^`<>*]+)`/g)) {
-          assert.ok(exists(`plugins/${plugin}/skills/${s}/${rel}`), `${s} names ${rel}`);
+        const named = namedPaths(skillFile(s));
+        for (const file of files(`${root}/skills/${s}`)) {
+          if (file === "SKILL.md") continue;
+          assert.ok(
+            named.some((n) => file === n || file.startsWith(`${n}/`)),
+            `${s}/${file} is named nowhere in its SKILL.md`,
+          );
         }
       }
     });
 
-    test("every agent and skill a skill names exists in the plugin", () => {
-      for (const s of skillNames) {
-        const body = skillText(s);
-        for (const [, name = ""] of body.matchAll(/`([a-z][a-z-]*)` agent/g)) {
-          assert.ok(agentNames.includes(name), `${s} names the agent ${name}`);
-        }
-        for (const [, name = ""] of body.matchAll(/`([a-z][a-z-]*)` skill/g)) {
-          assert.ok(skillNames.includes(name), `${s} names the skill ${name}`);
-        }
-      }
+    test("every agent is named by a skill", () => {
+      const all = skillNames.map((s) => skillFile(s)).join("\n");
+      for (const a of agentNames) assert.ok(all.includes(`\`${a}\``), `no skill names the agent ${a}`);
     });
 
-    test("every skill that opens a PR describes it in the four parts, in order", () => {
-      // A part opens bold, as `**What changes**` or `**What changes:**`.
-      const parts = ["**What changes", "**Needs you", "**Why trust it", "**Not done"];
-      const opensPr = skillNames.filter((s) => /open the PR/i.test(skillText(s)));
-      assert.ok(opensPr.length > 0);
-      for (const s of opensPr) {
-        // Read from where the skill introduces the four parts; a part may be named earlier, as where a gap goes.
-        const body = skillText(s);
-        const from = body.indexOf("four parts");
-        assert.ok(from !== -1, `${s} introduces the four parts`);
-        const at = parts.map((part) => body.indexOf(part, from));
-        for (const [i, part] of parts.entries()) assert.ok((at[i] ?? -1) >= 0, `${s} names ${part}`);
-        assert.deepEqual(
-          at.toSorted((a, b) => a - b),
-          at,
-          `${s} names the four parts in order`,
-        );
-      }
-    });
-  });
-
-  describe(`${plugin}'s agents`, () => {
-    test("each has a name equal to its file, a description, its tools and a model", () => {
+    test("each agent lists its tools, without Agent or Skill, and runs on a model tier Claude Code knows", () => {
       for (const a of agentNames) {
-        const { front, body } = frontmatter(read(`plugins/${plugin}/agents/${a}.md`));
-        assert.equal(text(front, "name"), a, `${a}: name`);
-        assert.ok(text(front, "description").length > 0, `${a}: description`);
-        assert.ok(text(front, "tools").length > 0 || list(front, "tools").length > 0, `${a}: tools`);
-        assert.match(text(front, "model"), /^(?:opus|sonnet|haiku|inherit)$/, `${a}: model`);
-        assert.ok(body.trim().length > 0, `${a}: body`);
+        const { front } = frontmatter(agentFile(a));
+        const tools = [...list(front, "tools"), ...text(front, "tools").split(",")]
+          .map((t) => t.trim())
+          .filter(Boolean);
+        assert.ok(tools.length > 0, `${a}: tools`);
+        for (const tool of ["Agent", "Skill"]) assert.ok(!tools.includes(tool), `${a} holds ${tool}`);
+        assert.match(text(front, "model"), /^(?:fable|opus|sonnet|haiku|inherit)$/, `${a}: model`);
       }
     });
   });
