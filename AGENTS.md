@@ -20,7 +20,8 @@ runs; `make smoke` and `make eval` call models.
   worktree, and commit only when the user asks. Only a delivery request creates a
   story branch in its own worktree and ends in a PR.
 - Write TypeScript, not JavaScript, wherever the runtime allows it.
-- Change a plugin's `version` only when the user asks for that bump.
+- Change a plugin's `version` only when the user asks for that bump. A release
+  is that bump committed and pushed to `master`, with no git tag.
 - Run a check that calls models only when the user asks. A delivery request
   with a criterion that needs one counts as asking.
 - A rule that governs what happens in a project using a plugin must be encoded

@@ -39,4 +39,4 @@ Agents never do these unless the user asks:
 - Merge a PR, enable auto-merge, or close one.
 - Force-push, amend or rebase pushed history, or delete a branch, tag or remote ref, apart from the cleanup after a merge.
 - Remove a worktree, apart from the cleanup after a merge.
-- Cut a release or tag, add a remote, or touch another repository.
+- Cut a release, add a remote, or touch another repository. A release is the plugin's `version` bump committed and pushed to `master`; the repo uses no git tags.

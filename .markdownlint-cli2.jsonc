@@ -11,6 +11,8 @@
     "node_modules/**",
     ".tmp/**",
     ".worktrees/**",
+    // Eval downloads and runs, which git ignores.
+    ".eval/**",
     "plugins/*/skills/*/resources/**",
     // The smoke fixture is a project of its own, written the way bootstrap's templates are.
     "eval/smoke/project/**",
