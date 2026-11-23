@@ -1,6 +1,6 @@
 {
   "name": "slopmaxx",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Takes work from an idea to a pull request in Claude Code: shapes and splits cards, delivers stories and bug fixes test first, runs spikes, and keeps a cited research library.",
   "author": {
     "name": "ca77y",
