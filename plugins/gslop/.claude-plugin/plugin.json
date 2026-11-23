@@ -1,0 +1,11 @@
+{
+  "name": "gslop",
+  "version": "0.1.0",
+  "description": "Has Google's Antigravity CLI, on a Gemini model, review a branch before it is pushed, then checks each finding against the code and fixes what holds up.",
+  "author": {
+    "name": "ca77y",
+    "url": "https://github.com/ca77y"
+  },
+  "repository": "https://github.com/ca77y/sloptimizer",
+  "license": "MIT"
+}

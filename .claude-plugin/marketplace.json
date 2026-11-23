@@ -12,6 +12,12 @@
       "source": "./plugins/slopmaxx",
       "description": "Takes work from an idea to a pull request in Claude Code: shapes and splits cards, delivers stories and bug fixes test first, runs spikes, and keeps a cited research library.",
       "category": "productivity"
+    },
+    {
+      "name": "gslop",
+      "source": "./plugins/gslop",
+      "description": "Has Google's Antigravity CLI, on a Gemini model, review a branch before it is pushed, then checks each finding against the code and fixes what holds up.",
+      "category": "productivity"
     }
   ]
 }

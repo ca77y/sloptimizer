@@ -8,6 +8,7 @@ through it.
 ```sh
 /plugin marketplace add ca77y/sloptimizer
 /plugin install slopmaxx@sloptimizer
+/plugin install gslop@sloptimizer   # optional: the agy (Gemini) branch review
 ```
 
 Or from the shell:
@@ -15,6 +16,7 @@ Or from the shell:
 ```sh
 claude plugin marketplace add ca77y/sloptimizer
 claude plugin install slopmaxx@sloptimizer
+claude plugin install gslop@sloptimizer
 ```
 
 ## Layout
@@ -27,6 +29,7 @@ plugins/
     skills/
       <skill-name>/SKILL.md          # one folder per skill
     agents/<agent-name>.md           # one file per agent
+  gslop/                             # the agy-review skill
 eval/
   smoke/                             # one smoke case per skill, and the project they run in
   swepro/                            # the SWE-bench Pro comparison
