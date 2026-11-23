@@ -8,7 +8,8 @@ and an HTTP service.
 
 PASS when the card does all of these:
 
-- delivers one outcome a user can check on its own, not the whole ticket;
+- delivers one outcome a user can check on its own, not the whole ticket; a card that only prepares the code for the
+  others counts when it adds no new behaviour and its criteria check only that the existing behaviour holds;
 - says why the work matters, so a reader who never saw the ticket understands it;
 - has acceptance criteria that are behaviours seen from outside the code;
 - says nothing about how to write the code.

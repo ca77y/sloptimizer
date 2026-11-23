@@ -24,7 +24,7 @@ team wants results without shelling out to Python.
 ## Acceptance criteria
 
 - `python3 calc.py convert 1 km m` prints 1000.
-- `python3 calc.py convert 1 mi km` prints 1.609344.
+- `python3 calc.py convert 1 mi km` prints 1.60934, rounded to five decimals.
 - `python3 calc.py convert 1 m ft` prints 3.28084, rounded to five decimals.
 - `python3 calc.py convert 1 kg lb` prints 2.20462, rounded to five decimals.
 - `python3 calc.py convert 100 C F` prints 212.

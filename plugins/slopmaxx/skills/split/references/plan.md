@@ -12,7 +12,7 @@ Cut the ticket into the fewest parts that together cover all of it. Every requir
 
 ## Order
 
-- **Prefactors first.** When a change to the existing code would make the rest easy, it is its own part, and the parts it helps are blocked by it.
+- **Prefactors first, when they stand apart.** A change to the existing code that makes the rest easy is its own part only when two or more parts need it and it changes nothing a user sees: its outcome is that the existing behaviour holds, its criteria check exactly that, and the parts it helps are blocked by it. Every new behaviour, such as a help listing or a new error, belongs to the part whose outcome needs it. A prefactor that only one part needs, or that can't land without new behaviour, goes into the first part that needs it.
 - **Wide refactors run expand, migrate, contract.** One mechanical change that breaks callers across the codebase (a rename, a retyped shared symbol) can't land as one green slice. Expand: add the new form beside the old. Migrate: move callers over in batches sized by their reach, each a part blocked by the expand. Contract: remove the old form, blocked by every batch.
 - **Blockers are real gates.** A part is blocked only by work it can't start without. Wanting one to land first is a priority, not a blocker.
 
@@ -28,6 +28,7 @@ Cut the ticket into the fewest parts that together cover all of it. Every requir
 - Each part has one outcome, stated as behaviour a user or the system shows, with no implementation in it.
 - Each part is a vertical slice that can be checked once merged, and fits one PR.
 - Each blocker is a true gate; no blocker cycle; prefactors and expands come before the parts they enable.
+- A prefactor part is needed by two or more parts and its criteria only check that existing behaviour holds.
 - No two parts overlap, and no part duplicates an existing card.
 - Constraints that hold for the whole set are named once and reach every card.
-- Nothing extra: no part that could merge into another and still be one PR, and no part the ticket doesn't ask for.
+- Nothing extra: no part that could merge into another and still be one PR, and no part or behaviour the ticket doesn't ask for.

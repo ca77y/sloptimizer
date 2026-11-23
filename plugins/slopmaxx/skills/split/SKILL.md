@@ -27,7 +27,7 @@ Have the plan reviewed by someone who didn't write it: the `reviewer` agent. Bri
 
 ## Write the cards
 
-Write each part as a story card, of the type `docs/BOARD.md` declares that fits it, such as a feature or an improvement, by that type's template. Give every card the constraints that hold for the whole set. Each card stands on its own: a reader who never saw the ticket learns from it why the work matters. Anything that would change a part's outcome goes under its Open questions.
+Write each part as a story card, of the type `docs/BOARD.md` declares that fits it, such as a feature or an improvement, by that type's template. Give every card the constraints that hold for the whole set, each written as behaviour a user or caller sees, the way its acceptance criteria are; how the code or its tests are written is left to whoever delivers the card. Each card stands on its own: a reader who never saw the ticket learns from it why the work matters. Anything that would change a part's outcome goes under its Open questions.
 
 ## File them
 
