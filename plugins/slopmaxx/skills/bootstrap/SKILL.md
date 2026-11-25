@@ -1,6 +1,6 @@
 ---
 name: bootstrap
-description: Sets a project up for the other skills, together with the user — writes docs/BOARD.md, docs/GIT.md, TESTING.md and the research library, or checks and fixes existing ones.
+description: Sets a project up for the other skills, together with the user — writes docs/BOARD.md, docs/GIT.md, docs/TESTING.md and the research library, or checks and fixes existing ones.
 disable-model-invocation: true
 ---
 
@@ -15,10 +15,12 @@ Fill each template in `resources/` one line per rule, stating the rule and the b
 - **`docs/BOARD.md`** from `resources/BOARD.md`: the tracker and how each operation runs on it (find, read, create, update, relate, comment, move), how story, bug and spike cards are laid out, its statuses, and which moves belong to the user.
 - **`docs/GIT.md`** from `resources/GIT.md`: the default branch, how each delivery's work is isolated (branch naming, where the work happens, normally a worktree of its own, what prepares it, and its scratch folder), the commit convention, how PRs are opened and reviewed, and what is off limits.
 - **`docs/templates/`**: one template per type of card the board has, written with the user and listed in `docs/BOARD.md`. Each opens with frontmatter that sets the tracker fields a new card of the type gets: `type`, `label`, `summary` (what the type is for, in one line) and `priority` (the default, on the board's scale). The body holds the card's layout, with a line on what goes in each section, inside one fenced block that becomes the card's description; how to set priority when the default doesn't fit, if the type needs that; the bar a card must clear before it's written; and the checklist a reviewer judges it against. Draft from the tracker's existing cards where it has them.
-- **`TESTING.md`** from `resources/TESTING.md`: the checks that must pass, how to run the app with several workspaces running it at once, how each kind of change is validated and the proof that goes into the PR, and how work is reviewed.
+- **`docs/TESTING.md`** from `resources/TESTING.md`: the checks that must pass, how to run the app with several workspaces running it at once, how each kind of change is validated and the proof that goes into the PR, and how work is reviewed.
 - **`library/`** from `resources/library/`: copy the tree, and fill the project name.
 
-Then point the root `AGENTS.md` or `CLAUDE.md` to each of these files in a line or two, and ignore the scratch folder and the worktree folder in git. Check that the tools `TESTING.md` runs (linters, test runners, type checkers) skip the worktree folder too, and propose the exclusion where one would scan it.
+Every one of these files lives under `docs/`, except the library. Move one an earlier setup left at the root, such as `TESTING.md`, to its place in `docs/`, and update what points to it.
+
+Then point the root `AGENTS.md` or `CLAUDE.md` to each of these files in a line or two, and ignore the scratch folder and the worktree folder in git. Check that the tools `docs/TESTING.md` runs (linters, test runners, type checkers) skip the worktree folder too, and propose the exclusion where one would scan it.
 
 ## Work through it with the user
 
@@ -37,4 +39,4 @@ A binding goes in only when it works on the tracker or repo as written; check ea
 
 ## Finish
 
-Run the checks `TESTING.md` now declares. Report the files created and changed, the content kept, and every `TODO:` left, with what would fill it.
+Run the checks `docs/TESTING.md` now declares. Report the files created and changed, the content kept, and every `TODO:` left, with what would fill it.

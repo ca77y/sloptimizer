@@ -41,6 +41,6 @@ The Linear title is the card's title: the change, as an action. The description 
 
 - Every section is there, and nothing outside the template is.
 - Today describes behaviour users meet, never how the code works.
-- Each criterion names one outcome visible from outside the code, differs from Today, passes or fails with nothing in between, and a `TESTING.md` kind can check it.
+- Each criterion names one outcome visible from outside the code, differs from Today, passes or fails with nothing in between, and a `docs/TESTING.md` kind can check it.
 - No implementation and no code locations; names users see (commands, flags, public functions) are fine.
 - Nothing extra.

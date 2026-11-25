@@ -45,6 +45,6 @@ The Linear title is the card's title: the outcome, as an action. The description
 ## Checklist
 
 - Every required section is there, and nothing outside the template is.
-- Each criterion names one outcome visible from outside the code, passes or fails with nothing in between, and a `TESTING.md` kind can check it.
+- Each criterion names one outcome visible from outside the code, passes or fails with nothing in between, and a `docs/TESTING.md` kind can check it.
 - No implementation and no code locations; names users see (commands, flags, public functions) are fine.
 - Nothing extra.

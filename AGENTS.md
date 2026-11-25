@@ -44,7 +44,7 @@ Read a file when the task reaches what it covers:
   the bindings, card types and which moves belong to the user.
 - `docs/templates/<type>.md` — before writing a card of that type: its fields,
   layout and checklist.
-- `TESTING.md` — before calling a change done, or when adding an eval case:
+- `docs/TESTING.md` — before calling a change done, or when adding an eval case:
   the checks, how each kind of change is validated and proven, and review.
 - `docs/ARCHITECTURE.md` — when changing how plugins, skills or agents are built,
   or what they read from a project.

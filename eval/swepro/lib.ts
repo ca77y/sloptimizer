@@ -46,7 +46,7 @@ export const DEFAULT_MODEL = "claude-opus-5-5";
 /** Every lookup tool is off in both arms, so neither can find the upstream fix. */
 const DISALLOWED_TOOLS = ["WebFetch", "WebSearch"];
 /** The files the harness adds to the task repository; they never reach a graded patch. */
-export const SETUP_FILES = ["TESTING.md", "docs/BOARD.md", "docs/GIT.md", "docs/templates/feature.md"];
+export const SETUP_FILES = ["docs/TESTING.md", "docs/BOARD.md", "docs/GIT.md", "docs/templates/feature.md"];
 /** Git-excluded paths the harness and the skills keep in the task repository. */
 export const EXCLUDED = [".swepro/", ".board/", ".forge/", ".tmp/", ".worktrees/"];
 export const BRANCH = "swepro";
@@ -210,7 +210,7 @@ function checksOf(repo: string): string {
 /** The project setup the skills read: how to run the code, a local Markdown board, and a local stub forge. */
 export function setupFiles(row: Row): Record<string, string> {
   return {
-    "TESTING.md": `# Testing
+    "docs/TESTING.md": `# Testing
 
 How a change in this project is checked, validated, proven and reviewed.
 
@@ -356,7 +356,7 @@ How each delivery's work is isolated. Nothing else runs in this checkout, and th
 
 - Opening: write \`.forge/prs/${BRANCH}.md\` with \`# <title>\` and the description, under a \`Draft: yes\` line while it's a draft; marking it ready removes that line. Target branch: \`main\`.
 - Description: four parts in this order: **What changes**, **Needs you**, **Why trust it**, **Not done**.
-- Required checks: the checks in \`TESTING.md\`.
+- Required checks: the checks in \`docs/TESTING.md\`.
 
 ## Restrictions
 

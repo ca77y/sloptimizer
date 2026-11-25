@@ -22,7 +22,7 @@ Out of scope: <what a reader might expect here but this delivery leaves out.>
 
 ## Criteria
 
-- [ ] <Each acceptance criterion as the card words it>: proven by <the test or check, per `TESTING.md`>.
+- [ ] <Each acceptance criterion as the card words it>: proven by <the test or check, per `docs/TESTING.md`>.
 
 ## Slices
 

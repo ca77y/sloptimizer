@@ -36,7 +36,7 @@ A skill knows nothing about a project until it reads the project's own files, an
 | `docs/BOARD.md`   | how the tracker is reached, each operation's binding, the card types, statuses and which moves are the user's            |
 | `docs/templates/` | one template per card type: tracker fields in frontmatter, the description layout, the bar before writing, the checklist |
 | `docs/GIT.md`     | how each delivery's work is isolated, branches, commits, pushes, PRs and restrictions                                    |
-| `TESTING.md`      | the checks, how to run the app per workspace, how each kind of change is validated and proven, and review                |
+| `docs/TESTING.md` | the checks, how to run the app per workspace, how each kind of change is validated and proven, and review                |
 | `library/`        | the persistent store of research and knowledge, by the conventions in `library/_meta/librarian.md`                       |
 
 - The plugin carries no project rules, no card templates and no defaults of its own. Every skill but `bootstrap` runs in a project `bootstrap` has set up, and takes these files as given.
@@ -51,4 +51,4 @@ A skill knows nothing about a project until it reads the project's own files, an
 
 - Repo tooling is TypeScript run directly by Node 26, under `scripts/` and `eval/`, with static tests in `test/`. The `Makefile` is the entry point; `make help` lists the targets.
 - `make lint` runs every static check, and the pre-commit hook runs it; `make test` runs the unit tests; `make check` runs both, as CI does.
-- Two evals call models and run only when the user asks. `make smoke` runs the cases under `eval/smoke/` through `claude plugin eval`, one per skill, each to the end in a small project of its own; because that command reads cases from inside a plugin, the target copies the plugin and the cases into a temporary folder first. `make eval` runs the SWE-bench Pro comparison in `eval/swepro/`, and each report compares itself with the one released for the version before, kept under `eval/results/`. `TESTING.md` says how each is used.
+- Two evals call models and run only when the user asks. `make smoke` runs the cases under `eval/smoke/` through `claude plugin eval`, one per skill, each to the end in a small project of its own; because that command reads cases from inside a plugin, the target copies the plugin and the cases into a temporary folder first. `make eval` runs the SWE-bench Pro comparison in `eval/swepro/`, and each report compares itself with the one released for the version before, kept under `eval/results/`. `docs/TESTING.md` says how each is used.

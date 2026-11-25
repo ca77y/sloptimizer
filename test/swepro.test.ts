@@ -216,10 +216,15 @@ describe("what each arm is given", () => {
 
   test("the setup tells both arms to run code in the task container, with no task-specific test", () => {
     const files = setupFiles(ROW);
-    assert.deepEqual(Object.keys(files), ["TESTING.md", "docs/BOARD.md", "docs/templates/feature.md", "docs/GIT.md"]);
+    assert.deepEqual(Object.keys(files), [
+      "docs/TESTING.md",
+      "docs/BOARD.md",
+      "docs/templates/feature.md",
+      "docs/GIT.md",
+    ]);
     assert.match(files["docs/GIT.md"] ?? "", /Where the work happens: this checkout, on the branch/);
-    assert.match(files["TESTING.md"] ?? "", /\.swepro\/run/);
-    assert.ok(!(files["TESTING.md"] ?? "").includes("test_utils"));
+    assert.match(files["docs/TESTING.md"] ?? "", /\.swepro\/run/);
+    assert.ok(!(files["docs/TESTING.md"] ?? "").includes("test_utils"));
     assert.throws(() => setupFiles({ ...ROW, repo: "unknown/repo" }), /no checks declared/);
   });
 });
@@ -250,7 +255,7 @@ describe("grading an arm", () => {
 
   test("an arm's patch leaves out the harness's setup files and binary hunks", () => {
     assert.deepEqual(DIFF_EXCLUDES, [
-      ":(exclude)TESTING.md",
+      ":(exclude)docs/TESTING.md",
       ":(exclude)docs/BOARD.md",
       ":(exclude)docs/GIT.md",
       ":(exclude)docs/templates/feature.md",

@@ -57,4 +57,4 @@ make smoke     # every skill run to the end in a small project; calls models
 make eval      # the full SWE-bench Pro eval, hours; calls models and runs Docker
 ```
 
-`TESTING.md` says what each level covers and how to add an eval case.
+`docs/TESTING.md` says what each level covers and how to add an eval case.

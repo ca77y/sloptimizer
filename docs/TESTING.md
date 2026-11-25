@@ -23,7 +23,7 @@ them. They run only when the user asks, never in CI.
   way a user does, in a small project of its own, and runs it to the end. `CASE=<glob>` runs some cases, `MODEL=<model>`
   another model, `RUNS=<n>` more than one run per case. Results and the HTML report go to `.eval/smoke/`.
 - Full: `make install-eval` once, then `make eval`, hours, with Docker. Runs SWE-bench Pro tasks through the plugin
-  and through plain Claude Code, as [`eval/swepro/README.md`](eval/swepro/README.md) says. `make eval-grader`
+  and through plain Claude Code, as [`eval/swepro/README.md`](../eval/swepro/README.md) says. `make eval-grader`
   checks its grader. Reports go to `.eval/runs/`, each compared with the newest release under `eval/results/`.
   `make eval-release` keeps a run there as the report for the plugin's version.
 

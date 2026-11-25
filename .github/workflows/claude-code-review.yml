@@ -2,7 +2,7 @@ name: Claude Code Review
 
 on:
   # Runs when a PR opens, and on demand when a PR comment is "@review" or starts with "@review" and a space or line break.
-  # When TESTING.md says how to request a review, it names this trigger; change one, change both.
+  # When docs/TESTING.md says how to request a review, it names this trigger; change one, change both.
   pull_request:
     types: [opened]
   issue_comment:

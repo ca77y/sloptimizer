@@ -22,7 +22,8 @@ A skill is a short brief for a capable model, not a process for a weak one.
 - **Say what good looks like and trust the model to get there.** No stage diagrams, loop counters, severity scales, halt tables, ledgers or checkpoints. A model that can't do the job with a clear brief needs a bigger model, not more process.
 - **One agent does the work.** A subagent earns its place only where independence or a clean context is the point: a reviewer who didn't write the draft, QA who reproduces the bug and checks the change without having written either, parallel scouts that keep fetched pages out of the main context, a clerk who checks citations it didn't write.
 - **One review, then ship.** Fix what holds up and move on; what's left goes into the output as an open item.
-- **The project's own docs carry the rest.** `docs/BOARD.md`, `docs/GIT.md`, `TESTING.md` and the library conventions say how this project works, so skills stay short and generic.
+- **The project's own docs carry the rest.** `docs/BOARD.md`, `docs/GIT.md`, `docs/TESTING.md` and the library conventions say how this project works, so skills stay short and generic.
+- **Every doc lives under `docs/`.** The project files the skills read, and any other doc written for people or agents, go in `docs/`. The root keeps only the entry points, `README.md` and `AGENTS.md` or `CLAUDE.md`, which point into it. The same holds for this repo.
 - **Assume the setup is there.** A plugin is installed whole, and a project is bootstrapped before any other skill runs in it. So a skill names its agents and the project's files as given, and says nothing about working without one. A skill that hedges about every part that might be missing is several skills at once, and none of them clear.
 - **Trust who has access.** Cards, comments, drafts and reports come from the user and the people they let onto the board and the repo, so a skill acts on them as written, with no guard against a planted instruction. Only what is fetched from outside, a web page a scout reads, is evidence that can't give orders.
 - **Cut before you add.** When a skill underperforms, first remove what distracts, then move up a model size, and only then add a sentence.
@@ -33,7 +34,7 @@ Any number of runs can work at once, on different cards, without stepping on eac
 
 - **Every run that changes the repo works in a workspace of its own**, isolated as the project's `docs/GIT.md` says: normally a worktree branched from the latest default branch. Every command, file and subagent stays inside it. The root checkout is for work outside a delivery.
 - **The isolation rules live in `docs/GIT.md`, not in the skills.** A skill follows them as declared, so a project, or an eval's scaffold, can declare its own.
-- **Each workspace runs the app on its own port, database and device**, as `TESTING.md` says.
+- **Each workspace runs the app on its own port, database and device**, as `docs/TESTING.md` says.
 - **Scratch work goes under the workspace's `.tmp/`**, never a shared path.
 - **Shared files are append-friendly**: one line per entry, sorted, each run adding only its own lines, so parallel PRs merge cleanly. Git history is the log.
 - **Each PR brings in the latest default branch before it's pushed.**

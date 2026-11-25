@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Deliver
 
-The card says why and what; you decide how, and your output is a pull request a reviewer can trust. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (work isolation, branches, commits, PRs) and `TESTING.md` (checks and how to validate) first. Carry the work through to the pull request in one go: work through an ordinary obstacle, such as a failing command or a timeout, put a choice only the user can make under **Needs you** and carry on, and stop early only when you can't go on without the user.
+The card says why and what; you decide how, and your output is a pull request a reviewer can trust. Read the project's `docs/BOARD.md` (the board), `docs/GIT.md` (work isolation, branches, commits, PRs) and `docs/TESTING.md` (checks and how to validate) first. Carry the work through to the pull request in one go: work through an ordinary obstacle, such as a failing command or a timeout, put a choice only the user can make under **Needs you** and carry on, and stop early only when you can't go on without the user.
 
 ## Start
 
@@ -23,14 +23,14 @@ Then list the vertical slices the change needs: each adds one behaviour, proven 
 - Work in vertical slices: one failing test for one behaviour, then the least code that passes it, then the next. Commit each failing test before the code that makes it pass.
 - Test behaviour through public interfaces, with expected values from an independent source, so the tests survive a refactor.
 - Every acceptance criterion gets a test or a validation step that would fail without the change.
-- Run the checks `TESTING.md` declares as you go, and all of them at the end.
+- Run the checks `docs/TESTING.md` declares as you go, and all of them at the end.
 - Change only what the card asks for. Something worth fixing outside it goes under **Not done** as a follow-up.
 
 ## Validate and review
 
-Validate each acceptance criterion in the running app the way `TESTING.md` says for its kind of change, on the port or device it gives this workspace, and capture the proof it names for that kind: screenshots, traces, responses, logs.
+Validate each acceptance criterion in the running app the way `docs/TESTING.md` says for its kind of change, on the port or device it gives this workspace, and capture the proof it names for that kind: screenshots, traces, responses, logs.
 
-Before the PR, always have the `qa` agent check the change: brief it with the card, the base branch, the workspace and its scratch folder, and keep your reasoning out. Fix what holds up. One round. Then run any review `TESTING.md` puts before the PR. A criterion still not met, or without its proof, goes under **Not done**, with why.
+Before the PR, always have the `qa` agent check the change: brief it with the card, the base branch, the workspace and its scratch folder, and keep your reasoning out. Fix what holds up. One round. Then run any review `docs/TESTING.md` puts before the PR. A criterion still not met, or without its proof, goes under **Not done**, with why.
 
 ## Ship it
 
@@ -38,7 +38,7 @@ Bring in the latest default branch so the PR merges cleanly, then push and open 
 
 - **What changes:** the behaviour before and after, in the card's terms.
 - **Needs you:** each reading or choice you made that the user should confirm.
-- **Why trust it:** each criterion with its proof, attached as `TESTING.md` says, then the tests and checks.
+- **Why trust it:** each criterion with its proof, attached as `docs/TESTING.md` says, then the tests and checks.
 - **Not done:** criteria you couldn't check, follow-ups, known gaps. Leave it out when empty.
 
-Open the PR ready when the ready-for-review conditions in `TESTING.md` hold and nothing under **Not done** blocks merging, and as a draft otherwise. Request review as `TESTING.md` says. Move the card as `docs/BOARD.md` says, leaving the transitions it reserves for the user to the user. Report the PR link and what's under **Needs you** and **Not done**.
+Open the PR ready when the ready-for-review conditions in `docs/TESTING.md` hold and nothing under **Not done** blocks merging, and as a draft otherwise. Request review as `docs/TESTING.md` says. Move the card as `docs/BOARD.md` says, leaving the transitions it reserves for the user to the user. Report the PR link and what's under **Needs you** and **Not done**.

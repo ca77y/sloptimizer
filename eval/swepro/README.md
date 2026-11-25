@@ -60,11 +60,11 @@ No version has a release yet, so the first report has nothing to compare with.
 
 For each task and arm:
 
-1. Copies the task's repository out of its image at the base commit, into the system temp folder, adds a `TESTING.md`,
+1. Copies the task's repository out of its image at the base commit, into the system temp folder, adds a `docs/TESTING.md`,
    a `docs/BOARD.md` with its feature template in `docs/templates/`, and a `docs/GIT.md`, for a local Markdown board
    under `.board/` and a local stub forge under `.forge/`, and commits them as the seed. A story's card is written to `.board/STORY-1.md`.
 2. Starts the task's container with the repository mounted in it. The code's toolchain lives only in the container,
-   so `TESTING.md` tells both arms to run commands through `.swepro/run '<command>'`.
+   so `docs/TESTING.md` tells both arms to run commands through `.swepro/run '<command>'`.
 3. Runs Claude Code headless in the repository on the run's model, with `--setting-sources project,local` and no MCP
    servers, so your own plugins, hooks, and settings stay out of both arms, and without WebFetch or WebSearch, so
    neither arm can look up the upstream fix. Its Bash tool runs in bash on every machine (`SHELL=/bin/bash`):
@@ -72,7 +72,7 @@ For each task and arm:
      `/slopmaxx:deliver` with the task text, `/slopmaxx:bugfix` with the task text, or `/slopmaxx:deliver STORY-1`,
      each working as the setup's `docs/GIT.md` says: on the branch `swepro` in the checkout. A shape → story
      task first runs `/slopmaxx:shape` on the problem statement and interface, then deliver on the card shape filed.
-   - plain: the task text and a pointer to `TESTING.md`.
+   - plain: the task text and a pointer to `docs/TESTING.md`.
 4. Takes the arm's final code as a patch on the seed, leaving out the setup files.
 5. Grades the patch in a fresh container of the task's published image with the task's own verifier, which applies
    the hidden tests and checks every fail-to-pass and pass-to-pass test. A pass-to-pass test that no longer passes is

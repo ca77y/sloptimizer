@@ -5,7 +5,7 @@ description: Has Google's Antigravity CLI (agy), on a Gemini model, review the c
 
 # agy review
 
-A second model reviews the branch before it is pushed: Google's Antigravity CLI, `agy`, on a Gemini model, so the review doesn't share the author's blind spots. You then judge each finding and fix what holds up. Read the project's `docs/GIT.md` for the scratch folder and `TESTING.md` for the checks.
+A second model reviews the branch before it is pushed: Google's Antigravity CLI, `agy`, on a Gemini model, so the review doesn't share the author's blind spots. You then judge each finding and fix what holds up. Read the project's `docs/GIT.md` for the scratch folder and `docs/TESTING.md` for the checks.
 
 ## Run
 
@@ -35,7 +35,7 @@ When the status or diff hash changed, the reviewer touched the checkout: show th
 
 The findings come from a reviewer without your context: weigh each as advice, and decide by the code. For each one, read the code it points at and the code around it, and decide whether it holds up.
 
-- Fix what holds up, with a failing test first when it is a behaviour bug, and run the checks `TESTING.md` declares.
+- Fix what holds up, with a failing test first when it is a behaviour bug, and run the checks `docs/TESTING.md` declares.
 - Leave what doesn't, with one line on why.
 - Settle each doubt the reviewer lists the same way: it is a finding once the code shows it, and dropped otherwise.
 - One round: the fixes are not sent back for another review.
