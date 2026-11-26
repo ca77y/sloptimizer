@@ -41,4 +41,4 @@ Bring in the latest default branch so the PR merges cleanly, then push and open 
 - **Why trust it:** each criterion with its proof, attached as `docs/TESTING.md` says, then the tests and checks.
 - **Not done:** criteria you couldn't check, follow-ups, known gaps. Leave it out when empty.
 
-Open the PR ready when the ready-for-review conditions in `docs/TESTING.md` hold and nothing under **Not done** blocks merging, and as a draft otherwise. Request review as `docs/TESTING.md` says. Move the card as `docs/BOARD.md` says, leaving the transitions it reserves for the user to the user. Report the PR link and what's under **Needs you** and **Not done**.
+Open the PR, ready or as a draft, and request its review by the steps in `docs/GIT.md`, exactly as they are written. Move the card as `docs/BOARD.md` says, leaving the transitions it reserves for the user to the user. Report the PR link and what's under **Needs you** and **Not done**.

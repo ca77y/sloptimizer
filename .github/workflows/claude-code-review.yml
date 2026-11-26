@@ -2,7 +2,7 @@ name: Claude Code Review
 
 on:
   # Runs when a PR opens, and on demand when a PR comment is "@review" or starts with "@review" and a space or line break.
-  # When docs/TESTING.md says how to request a review, it names this trigger; change one, change both.
+  # docs/GIT.md's Pull request steps name this trigger; change one, change both.
   pull_request:
     types: [opened]
   issue_comment:
@@ -45,8 +45,8 @@ jobs:
           # Tag mode posts a progress comment that shows the review's status. It passes the prompt as
           # instructions rather than as a slash command, so the prompt asks for the command through the Skill tool.
           track_progress: true
-          # Every run was asked for: deliveries open drafts and re-fire the review after each round, so the command's own
-          # skips for a draft or an earlier Claude comment would leave the PR unreviewed.
+          # Every run was asked for: deliveries re-fire the review after each round, so the command's own skips for an
+          # earlier Claude comment, or for a PR someone turned back into a draft, would leave it unreviewed.
           prompt: "Run the `code-review:code-review` command with the Skill tool, with the arguments `--comment ${{ github.repository }}/pull/${{ github.event.pull_request.number || github.event.issue.number }}`. This review was requested: review the PR even if it is a draft or Claude has commented on it before."
           # The action sets up the inline-comment tool only when it is allowed here.
           claude_args: >-

@@ -29,7 +29,6 @@ A criterion no kind covers, or one that couldn't be checked, is listed under **N
 
 - Who reviews: an independent `qa` agent before a code PR opens; nobody after it.
 - What a review checks: every criterion met with its proof, a test that would fail without the change, nothing changed outside the card.
-- How a review is requested and its findings read: no request is needed; the PR file is the end of the run.
 - Ready for review when: the tests pass, and every criterion has its proof or is listed under Not done.
 
 ## Blind spots

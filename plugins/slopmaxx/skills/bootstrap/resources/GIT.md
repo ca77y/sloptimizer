@@ -26,7 +26,7 @@ How each delivery's work is isolated, so deliveries run in parallel. Every skill
 
 ## Pull request
 
-- Opening: <the command; target branch; ready or draft>.
+- Opening and review, step by step: <the exact commands in the order they run, so a delivery follows them as written. For example: create the PR against the target branch, ready, or as a draft and the step that marks it ready; how its review is requested (whether opening requests it, or a comment or command after a later push); how to tell the review started and finished, with time limits; and where its findings are read>.
 - Description: four parts in this order: **What changes**, **Needs you**, **Why trust it**, **Not done**.
 - Required checks: <names, or "none">.
 

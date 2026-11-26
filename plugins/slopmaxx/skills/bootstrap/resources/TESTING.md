@@ -30,7 +30,6 @@ A criterion no kind covers, or one that couldn't be checked, is listed under **N
 
 - Who reviews: <for example, an independent QA agent before the PR is ready, then a person on the PR>.
 - What a review checks: <for example, every criterion met with its proof, tests that would catch a regression, nothing changed outside the card, the project's coding standards>.
-- How a review is requested and its findings read: <for example, requested on the PR; findings as review comments>.
 - Ready for review when: <for example, checks pass, and every criterion has its proof or is listed under Not done>.
 
 ## Blind spots

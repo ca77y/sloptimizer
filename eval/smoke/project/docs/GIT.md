@@ -26,7 +26,7 @@ Nothing else runs in this checkout, so a delivery works in it directly.
 
 ## Pull request
 
-- Opening: write `.forge/prs/smoke.md`: a `# <title>` heading, a `Draft: yes` or `Draft: no` line, a `Card: <id>` line when there is a card, then the description.
+- Opening and review, step by step: write `.forge/prs/smoke.md`: a `# <title>` heading, a `Draft: no` line, a `Card: <id>` line when there is a card, then the description. No review is requested; the PR file is the end of the run.
 - Description: four parts in this order: **What changes**, **Needs you**, **Why trust it**, **Not done**.
 - Required checks: none.
 

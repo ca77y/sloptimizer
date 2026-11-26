@@ -26,7 +26,12 @@ Every delivery runs in a worktree of its own, branched from the latest `master`,
 
 ## Pull request
 
-- Opening: `gh pr create --repo ca77y/sloptimizer --base master --head <branch> --title <title> --body-file <file>`, adding `--draft` for a draft; `gh pr ready <number>` marks it ready. Update the body with `gh pr edit <number> --body-file <file>`; read it with `gh pr view <number> --json title,body,url,comments,reviews` and `gh pr diff <number>`; comment with `gh pr comment <number> --body <text>`.
+- Opening and review, step by step:
+  1. Open the PR ready: `gh pr create --repo ca77y/sloptimizer --base master --head <branch> --title <title> --body-file <file>`. Claude Code Review runs when a PR opens and skips a draft, so what is unfinished goes under **Not done** rather than into draft status.
+  2. Opening requests the review. After each later push, request it again with `gh pr comment <number> --body @review`, a comment whose whole body is `@review`.
+  3. Watch it with `gh run list --repo ca77y/sloptimizer --workflow claude-code-review.yml --json databaseId,status,conclusion,createdAt,displayTitle --limit 20`: the newest run whose `displayTitle` is the PR title, created after the request, whose `conclusion` isn't `skipped`. It has finished at `status: completed`. Poll every 30 s; allow 5 min to start and 30 min to finish, then report a timeout.
+  4. Read what it posted: its PR comment from `claude[bot]` (`gh pr view <number> --json comments`) and its line comments (`gh api repos/ca77y/sloptimizer/pulls/<number>/comments`). The review counts only when that comment shows the code was reviewed; a `success` run whose comment says it skipped the PR is no review, so request it again.
+- Update the body with `gh pr edit <number> --body-file <file>`; read it with `gh pr view <number> --json title,body,url,comments,reviews` and `gh pr diff <number>`; comment with `gh pr comment <number> --body <text>`.
 - Title: an imperative sentence naming the outcome.
 - Description: four parts in this order: **What changes**, **Needs you**, **Why trust it**, **Not done**.
 - Required checks: the `Check` workflow's `lint` and `test` jobs.

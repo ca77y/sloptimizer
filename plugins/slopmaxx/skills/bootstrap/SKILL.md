@@ -30,7 +30,7 @@ Go one file at a time. For each:
 2. Draft the file from those facts, and propose an answer for every choice they leave open, with the reason. For a choice about what agents may do, propose the narrower option; a wider one goes in only when the user states it.
 3. Show the user the draft and the choices, a few at a time, and ask them to confirm or correct each:
    - **Board:** which types of card it has (propose story, bug and spike, and ask whether stories split into features and improvements and whether research gets its own type), each template's sections and checklist, who may move a card to which status, and where cards are filed.
-   - **Git:** how each delivery's work is isolated (propose a worktree per delivery at `.worktrees/<branch>` in the root checkout, with `.tmp/` in it as the scratch folder), and what agents may never do.
+   - **Git:** how each delivery's work is isolated (propose a worktree per delivery at `.worktrees/<branch>` in the root checkout, with `.tmp/` in it as the scratch folder), the exact steps that open a PR and request its review (propose opening it ready, so a review that runs on open doesn't skip a draft), and what agents may never do.
    - **Testing:** which kinds of change exist, how each is validated, what proof it leaves (screenshots, traces, logs) and how that proof reaches the PR, who reviews and what a review checks, and where the test account and env file come from.
    - Anything else only they can decide.
 4. Write the file once the user has settled its choices.
