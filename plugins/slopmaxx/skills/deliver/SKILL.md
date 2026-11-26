@@ -28,6 +28,8 @@ Then list the vertical slices the change needs: each adds one behaviour, proven 
 
 ## Validate and review
 
+Once every slice is built and the checks pass, run the `simplify` skill on the whole branch, with its arguments set to the diff it reviews: `Review git diff <base>...HEAD`, where `<base>` is the base branch `docs/GIT.md` names, such as `origin/master`. Then run the checks again and commit what it changed. Everything after this, validation and review alike, sees the simplified code.
+
 Validate each acceptance criterion in the running app the way `docs/TESTING.md` says for its kind of change, on the port or device it gives this workspace, and capture the proof it names for that kind: screenshots, traces, responses, logs.
 
 Before the PR, always have the `qa` agent check the change: brief it with the card, the base branch, the workspace and its scratch folder, and keep your reasoning out. Fix what holds up. One round. Then run any review `docs/TESTING.md` puts before the PR. A criterion still not met, or without its proof, goes under **Not done**, with why.

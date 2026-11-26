@@ -8,6 +8,9 @@ import { describe, test } from "node:test";
 
 import { agents, exists, frontmatter, list, plugins, read, ROOT, skills, text } from "./repo.ts";
 
+/** The skills Claude Code itself ships, which a plugin's skill may name without holding them. */
+const BUNDLED_SKILLS = new Set(["simplify"]);
+
 /** Every file below a folder, as paths relative to it. */
 const files = (rel: string): string[] =>
   readdirSync(path.join(ROOT, rel), { recursive: true, withFileTypes: true })
@@ -50,7 +53,8 @@ for (const plugin of plugins()) {
         const body = skillFile(s);
         for (const rel of namedPaths(body)) assert.ok(exists(`${root}/skills/${s}/${rel}`), `${s} names ${rel}`);
         for (const a of namedBefore(body, "agent")) assert.ok(agentNames.includes(a), `${s} names the agent ${a}`);
-        for (const n of namedBefore(body, "skill")) assert.ok(skillNames.includes(n), `${s} names the skill ${n}`);
+        for (const n of namedBefore(body, "skill"))
+          assert.ok(skillNames.includes(n) || BUNDLED_SKILLS.has(n), `${s} names the skill ${n}`);
       }
     });
 

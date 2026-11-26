@@ -31,6 +31,8 @@ Start the card on the board as `docs/BOARD.md` says.
 
 ## Confirm
 
+Once the regression test passes and the checks are green, run the `simplify` skill on the whole branch, with its arguments set to the diff it reviews: `Review git diff <base>...HEAD`, where `<base>` is the base branch `docs/GIT.md` names, such as `origin/master`. Then run the checks again and commit what it changed. Everything after this sees the simplified code.
+
 Run the reported steps in the app the way `docs/TESTING.md` says, on the port or device it gives this workspace, and capture the proof it names. Before the PR, always have a fresh `qa` agent check the fix: brief it with the bug report, the base branch, the reproduction to rerun, the workspace and its scratch folder. The reproduction and the reported steps must now pass. Fix what holds up. One round. Then run any review `docs/TESTING.md` puts before the PR.
 
 ## Ship it
