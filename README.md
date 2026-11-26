@@ -19,7 +19,7 @@ claude plugin install slopmaxx@sloptimizer
 claude plugin install gslop@sloptimizer
 ```
 
-`gslop` also needs Google's Antigravity CLI, signed in on a plan with Gemini 4 Neon: see
+`gslop` also needs Google's Antigravity CLI, signed in on a plan with Gemini 4 Neon, with the agent-skills plugin installed in it: see
 [`plugins/gslop/README.md`](plugins/gslop/README.md).
 
 ## Layout

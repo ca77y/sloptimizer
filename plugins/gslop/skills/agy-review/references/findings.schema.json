@@ -7,8 +7,7 @@
     },
     "findings": {
       "type": "array",
-      "description": "The most important findings first, at most ten.",
-      "maxItems": 10,
+      "description": "The most important findings first.",
       "items": {
         "type": "object",
         "properties": {

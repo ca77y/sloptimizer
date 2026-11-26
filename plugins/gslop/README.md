@@ -4,7 +4,7 @@ One skill, `agy-review`: Google's Antigravity CLI (`agy`), on Gemini 4 Neon, rev
 pushed, and Claude then checks each finding against the code and fixes what holds up.
 
 Installing the plugin is not enough. The skill runs `agy` headless on your machine, so it needs the CLI, a signed-in
-account, and a plan that includes Gemini 4 Neon.
+account on a plan that includes Gemini 4 Neon, and the agent-skills plugin installed in agy.
 
 ## Setup
 
@@ -37,16 +37,24 @@ account, and a plan that includes Gemini 4 Neon.
    - **Google Cloud ADC:** run `gcloud auth application-default login --project <project>` and export
      `AGY_ADC_AUTH=true`.
 
-4. **Check the model is there:**
+4. **Install Addy Osmani's [agent-skills](https://github.com/addyosmani/agent-skills) plugin in agy.** The review runs
+   its `code-reviewer` agent, and its `security-auditor` alongside when the change crosses a trust boundary:
+
+   ```sh
+   agy plugin install https://github.com/addyosmani/agent-skills.git
+   ```
+
+5. **Check the model and the agents are there:**
 
    ```sh
    agy models | grep gemini-4-neon-high
+   agy agents | grep -E "code-reviewer|security-auditor"
    ```
 
-   When it's missing, the review fails at the first call: the account has no Neon. Fix the plan or sign-in, or name
-   another model from that list when you ask for the review.
+   When the model is missing, the review fails at the first call: the account has no Neon. Fix the plan or sign-in, or
+   name another model from that list when you ask for the review. When the agents are missing, repeat step 4.
 
-5. **Run `agy` once in each project** you'll review, and trust the folder when it asks, so the headless run isn't
+6. **Run `agy` once in each project** you'll review, and trust the folder when it asks, so the headless run isn't
    stopped by a prompt it can't answer.
 
 ## Use
