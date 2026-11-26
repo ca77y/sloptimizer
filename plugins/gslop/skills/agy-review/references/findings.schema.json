@@ -7,6 +7,8 @@
     },
     "findings": {
       "type": "array",
+      "description": "The most important findings first, at most ten.",
+      "maxItems": 10,
       "items": {
         "type": "object",
         "properties": {
@@ -16,17 +18,31 @@
           "line": {
             "type": "integer"
           },
+          "category": {
+            "type": "string",
+            "enum": ["request", "correctness", "security", "tests", "structure", "performance", "readability"],
+            "description": "request: part of the request the change doesn't deliver. tests: a behaviour the change adds that no test pins."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "high: goes wrong in normal use. medium: goes wrong on an edge case or error path. low: nothing goes wrong today, but a later regression would get through."
+          },
           "blocking": {
             "type": "boolean"
           },
           "issue": {
             "type": "string"
           },
+          "evidence": {
+            "type": "string",
+            "description": "What proved it: the command or test run and what it showed, or the code path traced from the entry point to the defect."
+          },
           "fix": {
             "type": "string"
           }
         },
-        "required": ["file", "line", "blocking", "issue", "fix"]
+        "required": ["file", "line", "category", "severity", "blocking", "issue", "evidence", "fix"]
       }
     },
     "doubts": {

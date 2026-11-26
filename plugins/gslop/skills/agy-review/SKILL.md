@@ -33,7 +33,7 @@ When the status or diff hash changed, the reviewer touched the checkout: show th
 
 ## Judge
 
-The findings come from a reviewer without your context: weigh each as advice, and decide by the code. For each one, read the code it points at and the code around it, and decide whether it holds up.
+The findings come from a reviewer without your context: weigh each as advice, and decide by the code. For each one, read the code it points at and the code around it, repeat its evidence where that is a command or test, and decide whether it holds up.
 
 - Fix what holds up, with a failing test first when it is a behaviour bug, and run the checks `docs/TESTING.md` declares.
 - Leave what doesn't, with one line on why.
@@ -44,4 +44,4 @@ Inside a delivery, commit the fixes as `docs/GIT.md` says; otherwise leave them 
 
 ## Report
 
-Report the model that reviewed, the reviewer's summary, each finding and doubt with what you did about it (fixed, or left and why), and anything the review didn't cover.
+Report the model that reviewed, the reviewer's summary, each finding with its category and severity, and each doubt, with what you did about it (fixed, or left and why), and anything the review didn't cover.

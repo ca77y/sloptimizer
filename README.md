@@ -19,6 +19,9 @@ claude plugin install slopmaxx@sloptimizer
 claude plugin install gslop@sloptimizer
 ```
 
+`gslop` also needs Google's Antigravity CLI, signed in on a plan with Gemini 4 Neon: see
+[`plugins/gslop/README.md`](plugins/gslop/README.md).
+
 ## Layout
 
 ```text
@@ -29,7 +32,7 @@ plugins/
     skills/
       <skill-name>/SKILL.md          # one folder per skill
     agents/<agent-name>.md           # one file per agent
-  gslop/                             # the agy-review skill
+  gslop/                             # the agy-review skill; README.md says what to install
 eval/
   smoke/                             # one smoke case per skill, and the project they run in
   swepro/                            # the SWE-bench Pro comparison
