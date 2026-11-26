@@ -48,7 +48,9 @@ Read a file when the task reaches what it covers:
   the checks, how each kind of change is validated and proven, and review.
 - `docs/ARCHITECTURE.md` — when changing how plugins, skills or agents are built,
   or what they read from a project.
-- `docs/DESIGN.md` — when writing or changing a skill, agent or reference: the
-  principles they are designed against.
+- `docs/DESIGN.md` and `docs/BEST_PRACTICES.md` — before writing or changing a
+  skill, agent or reference, and again to check the change before calling it
+  done: the principles they are designed against, and the outside rules, by id,
+  to check the wording against.
 - `library/_meta/librarian.md` — before adding to or answering from the library:
   its conventions.
