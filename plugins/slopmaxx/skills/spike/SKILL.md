@@ -1,6 +1,6 @@
 ---
 name: spike
-description: Answers a bounded technical question with a cited findings document, measuring what evidence can't settle with a throwaway prototype, delivered as a PR. Use when asked for a spike, or to settle a technical question by evidence and measurement.
+description: Answers a bounded technical question with a cited findings document, measuring what evidence can't settle with a throwaway prototype, delivered as a PR. Use when asked for a spike.
 ---
 
 # Spike

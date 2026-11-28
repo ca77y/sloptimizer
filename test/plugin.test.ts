@@ -71,13 +71,12 @@ for (const plugin of plugins()) {
       }
     });
 
-    test("the model can start every skill but bootstrap, each from a description that says when to use it", () => {
+    test("the model can start every skill but bootstrap, and each description says when to use it", () => {
       for (const s of skillNames) {
         const { front } = frontmatter(skillFile(s));
         const userOnly = text(front, "disable-model-invocation") === "true";
         assert.equal(userOnly, s === "bootstrap", `${s}: disable-model-invocation`);
-        if (!userOnly)
-          assert.match(text(front, "description"), /\. Use when /, `${s}: description says when to use it`);
+        assert.match(text(front, "description"), /\. Use when /, `${s}: description says when to use it`);
       }
     });
 

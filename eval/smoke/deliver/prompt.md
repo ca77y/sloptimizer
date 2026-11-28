@@ -6,4 +6,4 @@ timeout_seconds: 3600
 runs: 1
 ---
 
-/slopmaxx:deliver STORY-1
+Please deliver card STORY-1.

@@ -1,6 +1,6 @@
 ---
 name: bootstrap
-description: Sets a project up for the other skills, together with the user — writes docs/BOARD.md, docs/GIT.md, docs/TESTING.md and the research library, or checks and fixes existing ones.
+description: Sets a project up for the other skills, together with the user — writes docs/BOARD.md, docs/GIT.md, docs/TESTING.md and the research library, or checks and fixes existing ones. Use when asked to set a project up for slopmaxx, or to check its setup.
 disable-model-invocation: true
 ---
 

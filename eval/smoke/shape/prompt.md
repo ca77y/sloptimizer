@@ -6,4 +6,4 @@ timeout_seconds: 1800
 runs: 1
 ---
 
-/slopmaxx:shape let users of calc.py divide one number by another from the command line
+Create a card for this: let users of calc.py divide one number by another from the command line.
