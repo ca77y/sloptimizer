@@ -44,7 +44,8 @@ A criterion no kind covers, or one that couldn't be checked, is listed under **N
   and `shape`.
 - A case is a folder `eval/smoke/<skill>/` holding `case.yaml`, `prompt.md`, `scaffold.sh`, `graders/` and, when the
   skill needs a card to start from, `seed/`.
-- `prompt.md` starts the skill as a user does, `/slopmaxx:<skill> …`, and lets it run to the end.
+- `prompt.md` starts the skill as a user does and lets it run to the end: by its command, `/slopmaxx:<skill> …`, or, in a
+  case named `<skill>-asked` or `shape-reshapes`, in plain words, so the model must pick the skill itself.
 - Every case runs in the same project, `eval/smoke/project/`: a small calculator with a board and a forge that are
   folders (`.board/`, `.forge/`), so a run reaches no real tracker or forge. `fixture.sh` builds it, adds the
   plugin's own library templates and the case's `seed/`, and commits it as one commit on `main`.
