@@ -57,8 +57,8 @@ A criterion no kind covers, or one that couldn't be checked, is listed under **N
 ## Review
 
 - Who reviews: Claude Code Review (`.github/workflows/claude-code-review.yml`) on every PR, then the user, who merges.
-  No review runs before the PR opens beyond the deliver skill's own `qa` check, so a delivery runs the same in a cloud
-  session as on the user's machine.
+  Before the PR opens, only the deliver skill's own `simplify` and `qa` steps review the change, so a delivery runs the
+  same in a cloud session as on the user's machine.
 - How a review is requested and its findings read: the steps under Pull request in `docs/GIT.md`.
 - What a review checks: the change does what was asked, `make check` passes, and every rule a project using the
   plugin must follow is in the plugin.
