@@ -56,8 +56,9 @@ A criterion no kind covers, or one that couldn't be checked, is listed under **N
 
 ## Review
 
-- Who reviews: the `gslop:agy-review` skill before the PR opens, in the delivery's worktree, with its findings judged and
-  fixed; then Claude Code Review (`.github/workflows/claude-code-review.yml`) on every PR; then the user, who merges.
+- Who reviews: Claude Code Review (`.github/workflows/claude-code-review.yml`) on every PR, then the user, who merges.
+  Before the PR opens, only the deliver skill's own `simplify` and `qa` steps review the change, so a delivery runs the
+  same in a cloud session as on the user's machine.
 - How a review is requested and its findings read: the steps under Pull request in `docs/GIT.md`.
 - What a review checks: the change does what was asked, `make check` passes, and every rule a project using the
   plugin must follow is in the plugin.
