@@ -1,7 +1,6 @@
 ---
 name: shape
-description: Turns an idea, request, bug report or open question into a well-formed card on the project's board, of a type its board declares (a story, bug or spike by default), and files it.
-disable-model-invocation: true
+description: Turns an idea, request, bug report or open question into a well-formed card on the project's board, of a type its board declares (a story, bug or spike by default), and files it. Use when asked to create, file or reshape a card, ticket or issue, or when a card's open questions have been answered.
 ---
 
 # Shape

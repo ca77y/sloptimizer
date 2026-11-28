@@ -1,7 +1,6 @@
 ---
 name: spike
-description: Answers a bounded technical question with a cited findings document, measuring what evidence can't settle with a throwaway prototype, delivered as a PR.
-disable-model-invocation: true
+description: Answers a bounded technical question with a cited findings document, measuring what evidence can't settle with a throwaway prototype, delivered as a PR. Use when asked for a spike.
 ---
 
 # Spike

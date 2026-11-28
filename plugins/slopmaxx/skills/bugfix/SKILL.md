@@ -1,7 +1,6 @@
 ---
 name: bugfix
-description: Fixes a reported bug and opens a pull request that shows it before and after — reproduced independently, fixed test first.
-disable-model-invocation: true
+description: Fixes a reported bug and opens a pull request that shows it before and after — reproduced independently, fixed test first. Use when asked to fix a reported bug or a bug card.
 ---
 
 # Bugfix

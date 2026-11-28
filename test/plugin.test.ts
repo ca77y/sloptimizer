@@ -71,6 +71,15 @@ for (const plugin of plugins()) {
       }
     });
 
+    test("the model can start every skill but bootstrap, and each description says when to use it", () => {
+      for (const s of skillNames) {
+        const { front } = frontmatter(skillFile(s));
+        const userOnly = text(front, "disable-model-invocation") === "true";
+        assert.equal(userOnly, s === "bootstrap", `${s}: disable-model-invocation`);
+        assert.match(text(front, "description"), /\. Use when /, `${s}: description says when to use it`);
+      }
+    });
+
     test("every agent is named by a skill", () => {
       const all = skillNames.map((s) => skillFile(s)).join("\n");
       for (const a of agentNames) assert.ok(all.includes(`\`${a}\``), `no skill names the agent ${a}`);

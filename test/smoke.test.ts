@@ -6,12 +6,12 @@
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { after, describe, test } from "node:test";
 
-import { ROOT, smokeCases } from "./repo.ts";
+import { read, ROOT, smokeCases } from "./repo.ts";
 
 const scratch: string[] = [];
 after(() => {
@@ -55,5 +55,20 @@ describe("a smoke case's project", () => {
       assert.ok(existsSync(path.join(dir, rel)), rel);
     }
     assert.doesNotMatch(readFileSync(path.join(dir, "library/_meta/librarian.md"), "utf8"), /\{\{/);
+  });
+});
+
+describe("a smoke case asked in plain words", () => {
+  test("has a grader that checks the model started the case's skill itself", () => {
+    for (const name of smokeCases()) {
+      if (/^\/slopmaxx:/m.test(read(`eval/smoke/${name}/prompt.md`))) continue;
+      const graders = readdirSync(path.join(ROOT, "eval/smoke", name, "graders"));
+      const [skill = name] = name.split("-", 1);
+      const checked = graders.some((g) => {
+        const grader = read(`eval/smoke/${name}/graders/${g}`);
+        return /^tool: Skill$/m.test(grader) && grader.includes(`slopmaxx:${skill}"`);
+      });
+      assert.ok(checked, `${name}: no grader checks the model started ${skill}`);
+    }
   });
 });
