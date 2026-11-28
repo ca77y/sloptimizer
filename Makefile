@@ -3,7 +3,7 @@ PLUGINS ?= $(wildcard plugins/*/)
 # The model that judges a smoke case's llm graders. The default small judge fails correct answers on their format.
 JUDGE ?= opus
 
-.PHONY: help install lint format check typecheck test smoke install-eval eval eval-grader eval-release
+.PHONY: help install telemetry lint format check typecheck test smoke install-eval eval eval-grader eval-release
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-13s %s\n", $$1, $$2}'
@@ -11,6 +11,9 @@ help: ## List targets
 install: ## Once per clone: the dev tools and the pre-commit hook
 	npm ci
 	git config core.hooksPath .githooks
+
+telemetry: ## Install or restart the telemetry collector and GCS sync (docs/TELEMETRY.md)
+	telemetry/install.sh
 
 # What the pre-commit hook runs. It leaves the tests out, so a delivery can commit a failing test before its fix.
 lint: typecheck ## Every static check except the tests

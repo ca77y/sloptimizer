@@ -7,6 +7,7 @@ Claude Code plugins under `plugins/`, listed by the `sloptimizer` marketplace in
 - **eval/** — the evals, which call models: `smoke/`, one case per skill, `swepro/`, the SWE-bench Pro comparison, and `results/`, its report for each plugin version.
 - **scripts/** — repo tooling, run through the `Makefile`.
 - **test/** — static tests.
+- **telemetry/** and **terraform/** — the laptop's telemetry collector and GCS sync, and the GCP project they ship to.
 - **docs/** — architecture, design, git, board, card templates, spikes.
 - **library/** — persistent store of research and knowledge; evidence, never implementation authority.
 
@@ -52,5 +53,7 @@ Read a file when the task reaches what it covers:
   skill, agent or reference, and again to check the change before calling it
   done: the principles they are designed against, and the outside rules, by id,
   to check the wording against.
+- `docs/TELEMETRY.md` — when changing, installing or reading the telemetry: how
+  Claude Code's telemetry and transcripts reach the GCS bucket, and how to check it.
 - `library/_meta/librarian.md` — before adding to or answering from the library:
   its conventions.

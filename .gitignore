@@ -15,3 +15,10 @@ skills-lock.json
 
 # Scratch folder (docs/GIT.md)
 /.tmp/
+
+# Terraform local state, provider cache and the billing account (docs/TELEMETRY.md)
+/terraform/.terraform/
+/terraform/*.tfstate
+/terraform/*.tfstate.*
+/terraform/*.tfplan
+/terraform/terraform.tfvars
