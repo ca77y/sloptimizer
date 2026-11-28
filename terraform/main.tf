@@ -32,3 +32,26 @@ resource "google_storage_bucket" "telemetry" {
 
   depends_on = [google_project_service.storage]
 }
+
+resource "google_project_service" "iam" {
+  project            = var.project_id
+  service            = "iam.googleapis.com"
+  disable_on_destroy = false
+
+  depends_on = [google_billing_project_info.this]
+}
+
+# What claude.ai cloud sessions sign in as to read the telemetry. Its JSON key is made with gcloud, so the private key
+# stays out of the Terraform state (docs/TELEMETRY.md).
+resource "google_service_account" "reader" {
+  account_id   = "telemetry-reader"
+  display_name = "Telemetry reader for claude.ai cloud sessions"
+
+  depends_on = [google_project_service.iam]
+}
+
+resource "google_storage_bucket_iam_member" "reader" {
+  bucket = google_storage_bucket.telemetry.name
+  role   = "roles/storage.objectViewer"
+  member = google_service_account.reader.member
+}

@@ -22,8 +22,29 @@ study how the plugins behave.
   two launchd agents `com.sloptimizer.otelcol` and `com.sloptimizer.sync` from the plist templates beside it. It is
   safe to rerun, which reinstalls and restarts both. `make telemetry` runs it.
 - `terraform/`: the GCP side in project `sloptimizer-472320`, region `europe-central2`. It links the project's billing,
-  enables Cloud Storage and owns the bucket. The project itself was created with `gcloud projects create`. The state,
+  enables Cloud Storage and IAM, and owns the bucket and the reader service account. The project itself was created with `gcloud projects create`. The state,
   the provider cache and `terraform.tfvars`, which holds `billing_account`, are local and ignored by git.
+
+## Cloud access
+
+claude.ai cloud sessions read the bucket as the service account
+`telemetry-reader@sloptimizer-472320.iam.gserviceaccount.com`. It holds only `roles/storage.objectViewer`, granted on
+the bucket, so it can list and read objects but cannot write or delete. Terraform owns the account and its grant. Its
+JSON key is made with `gcloud`, so the private key stays out of the Terraform state:
+
+```sh
+gcloud iam service-accounts keys create ~/.config/sloptimizer/telemetry-reader-key.json \
+  --iam-account telemetry-reader@sloptimizer-472320.iam.gserviceaccount.com
+```
+
+The key goes into the cloud environment's `GCP_SA_KEY` variable: open the environment menu in the session title bar,
+choose Edit, and paste it there. The environment's setup script writes the key to a file and runs
+`gcloud auth activate-service-account --key-file <file>`, so each session starts signed in. Environment variables load
+when a session starts.
+
+To rotate the key, create a new one, replace `GCP_SA_KEY`, then delete the old one with
+`gcloud iam service-accounts keys delete <key id> --iam-account <account>`. List the keys with
+`gcloud iam service-accounts keys list --iam-account <account> --managed-by user`.
 
 ## Turning it on
 

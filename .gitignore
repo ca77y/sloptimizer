@@ -22,3 +22,6 @@ skills-lock.json
 /terraform/*.tfstate.*
 /terraform/*.tfplan
 /terraform/terraform.tfvars
+
+# GCP service-account keys, should one land in the repo (docs/TELEMETRY.md)
+*-key.json
