@@ -59,12 +59,16 @@ describe("a smoke case's project", () => {
 });
 
 describe("a smoke case asked in plain words", () => {
-  test("has a grader that checks the model started the skill itself", () => {
+  test("has a grader that checks the model started the case's skill itself", () => {
     for (const name of smokeCases()) {
       if (/^\/slopmaxx:/m.test(read(`eval/smoke/${name}/prompt.md`))) continue;
       const graders = readdirSync(path.join(ROOT, "eval/smoke", name, "graders"));
-      const checked = graders.some((g) => /^tool: Skill$/m.test(read(`eval/smoke/${name}/graders/${g}`)));
-      assert.ok(checked, `${name}: no grader checks which skill the model started`);
+      const [skill = name] = name.split("-", 1);
+      const checked = graders.some((g) => {
+        const grader = read(`eval/smoke/${name}/graders/${g}`);
+        return /^tool: Skill$/m.test(grader) && grader.includes(`slopmaxx:${skill}"`);
+      });
+      assert.ok(checked, `${name}: no grader checks the model started ${skill}`);
     }
   });
 });
