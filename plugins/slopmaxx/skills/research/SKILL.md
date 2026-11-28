@@ -1,7 +1,6 @@
 ---
 name: research
-description: Answers a question from new primary sources and adds the answer to the project's research library — raw notes per source, wiki pages that answer it — delivered as a PR.
-disable-model-invocation: true
+description: Answers a question from new primary sources and adds the answer to the project's research library — raw notes per source, wiki pages that answer it — delivered as a PR. Use when asked to research a topic, or to answer a question the research library doesn't cover yet.
 ---
 
 # Research
