@@ -76,7 +76,8 @@ for (const plugin of plugins()) {
         const { front } = frontmatter(skillFile(s));
         const userOnly = text(front, "disable-model-invocation") === "true";
         assert.equal(userOnly, s === "bootstrap", `${s}: disable-model-invocation`);
-        if (!userOnly) assert.match(text(front, "description"), /\. Use when /, `${s}: description says when to use it`);
+        if (!userOnly)
+          assert.match(text(front, "description"), /\. Use when /, `${s}: description says when to use it`);
       }
     });
 
